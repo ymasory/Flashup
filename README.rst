@@ -1,3 +1,20 @@
-Simple markup language for creating printable flashcards
+==================================
+Flashup - Studying. In plain text.
+==================================
 
-Homepage: http://github.com/ymasory/Flashup
+*Simple markup language for creating printable flashcards*
+
+Project homepage <http://github.com/ymasory/Flashup>
+
+My flashcards <http://yuvimasory.com/flashcards.html>
+
+
+Build
+===== 
+1. Install sbt <http://code.google.com/p/simple-build-tool/>
+2. ``cd Flashup``
+3. ``sbt`` (start sbt)
+4. ``update``
+5. ``proguard``
+6. ``quit`` (leave sbt)
+7. ``java -jar target/scala_*/flashup-*.min.jar samples/sample.flashup``
