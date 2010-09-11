@@ -1,0 +1,41 @@
+#TOPLEFT My Favorite Book
+#TOPRIGHT chapter 3
+
+* Stars indicate the front of a card.
+Everything after the star is the back of the card.
+
+*     Fronts of cards are trimmed for pointless whitespace.
+
+
+
+Same for the back sides. Leading and trailing empty lines are discarded.
+
+
+
+
+But empty lines in the middle aren't.
+
+
+
+
+
+* You can have `monospace`, ``italic``, or ```bold``` on the front.
+`same` ``on`` ```the back```
+
+* What is the population of China?
+* What is its GDP?
+You can have multiple elements on the front of a card, nicely spaced. Just don't put lines in between the front elements.
+
+
+* The pdf translator will make sure your text nicely fits to the card.
+Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. Even if you have way more text than can be fit with the default font size. ```See, everything fit!```
+
+* You can write a verbatim code block that guarantees no wrapping will take place.
+Some code:
+
+`
+for(int i = 0; i < 10; i++) {
+  System.out.println("a realllllllllllllllly long line won't wrap in a code block");
+}
+`
+

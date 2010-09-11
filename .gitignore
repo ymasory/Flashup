@@ -1,0 +1,10 @@
+*~
+*.aux
+*.log
+*.pdf
+*.synctex.gz
+
+target/
+lib_managed/
+src_managed/
+project/boot/
