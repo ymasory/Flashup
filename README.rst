@@ -18,3 +18,4 @@ Build
 5. ``proguard``
 6. ``quit`` (leave sbt)
 7. ``java -jar target/scala_*/flashup-*.min.jar samples/sample.flashup``
+8. open ``sample.pdf`` in your favorite PDF viewer
