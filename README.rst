@@ -2,7 +2,7 @@
 Flashup - Studying. In plain text.
 ==================================
 
-*A simple markup language for creating printable flashcards*
+*A simple markup language for creating flashcards*
 
 Project homepage <http://ymasory.github.com/Flashup/>
 
