@@ -1,0 +1,38 @@
+* How do you make a basic flashcard?
+To start a new card, put a * on the beginning of the line. The rest of the line is the front side. Everything after that line is the back side, until the next flashcard.
+
+* Does Flashup let you have multiple questions on the front of a card?
+* If so, how?
+To get multiple questions on the front, nicely spaced, put two (or more) lines in a row that start with a *. Each will be a separate question. Don't put any lines in between the questions!
+
+* Does Flashup `allow` ``text`` ```formatting```?
+Yes! `One back tick` makes monospace, ``two back ticks`` makes italics, and ```three back ticks``` makes bold.
+
+Note that this is ``inline`` formatting. You can't cross multiple lines when using formatting!
+
+* I have a really long question or answer, is everything going to fit?
+No worries, Flashup automatically takes care of fitting what you write to the flashcard.
+
+So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want. So type as much as you want.
+
+```See, everything fit!```
+
+* Can I write code? I need to make sure the text doesn't wrap to the next line!
+There's a special code mode to give monospace text with no wrapping. Like the monospace mode you use a single back tick, but in this case you put the back ticks on their own line.
+
+`
+(0 to 100) foreach {
+   println("I realllllllllllllllly need this to fit on just one line")
+}
+`
+
+* How can I write fancy symbols, like math equations?
+Flashup has special modes for LaTeX. You can write inline `~\LaTeX~` using back tick + tilde.
+If you need multiple lines you put the back tick + tilde on their own line:
+
+`~
+\psi_{tot}(x,-t_0,r) = \frac{1}{(2\pi)^2} \int\!\!\!\int
+\tilde\Psi_{tot}\left(k_x,\frac{c}{2}\sqrt{k_x^2 + k_r^2},r=0\right)
+`~
+
+The result will be centered.
