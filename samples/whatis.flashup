@@ -1,0 +1,13 @@
+* What is Flashup?
+A simple markup language for creating flashcards.
+
+Every programmer knows the fastest way to do ``anything`` is in a text editor. Flashup takes that philosophy to flashcards, providing a markup system in the spirit of Markdown and reStructuredText.
+
+* What features does Flashup provide?
+The standard Flashup binary provides a PDF translator for easy printing. More translators are on the way to target popular Android and iPhone flashcard apps.
+
+The Flashup language itself supports `simple` ``text`` ```formatting``` and special modes for writing program code and `~\latex~`.
+
+`
+println("Now let's get studying!")
+`
