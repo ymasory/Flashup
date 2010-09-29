@@ -4,7 +4,7 @@ import java.lang.Math
 
 import java.io.{File, FileOutputStream, StringReader}
 
-import com.itextpdf.text.{Document => PdfDocument, _}
+import com.itextpdf.text.{Document => ITextDocument, _}
 import com.itextpdf.text.Font._
 import com.itextpdf.text.Utilities._
 
@@ -18,7 +18,7 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
 
   override def translate(flashDoc: Document, sides: Pages.Value, outFile: File): Unit = {
     try {
-      val pdfDoc = new PdfDocument()
+      val pdfDoc = new ITextDocument("hi")
       pdfDoc addCreator ProgramName
       
       pdfDoc setPageSize PageRect
