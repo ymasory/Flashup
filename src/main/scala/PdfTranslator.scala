@@ -18,7 +18,7 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
 
   override def translate(flashDoc: Document, sides: Pages.Value, outFile: File): Unit = {
     try {
-      val pdfDoc = new ITextDocument("uniqueid")
+      val pdfDoc = new ITextDocument(flashDoc.hashCode.toString)
       pdfDoc addCreator ProgramName
       
       pdfDoc setPageSize PageRect
