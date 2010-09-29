@@ -44,3 +44,19 @@ Index: src/core/com/itextpdf/text/pdf/PdfDocument.java
                      break;
  
                  // content (text)
+Index: src/core/com/itextpdf/text/pdf/BaseFont.java
+===================================================================
+--- src/core/com/itextpdf/text/pdf/BaseFont.java	(revision 4594)
++++ src/core/com/itextpdf/text/pdf/BaseFont.java	(working copy)
+@@ -1110,9 +1110,10 @@
+      * @return the subset prefix
+      */
+     public static String createSubsetPrefix() {
++        java.util.Random rand = new java.util.Random(0);
+         String s = "";
+         for (int k = 0; k < 6; ++k)
+-            s += (char)(Math.random() * 26 + 'A');
++            s += (char)(rand.nextDouble() * 26 + 'A');
+         return s + "+";
+     }
+ 
