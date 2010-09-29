@@ -182,7 +182,7 @@ Index: src/core/com/itextpdf/text/pdf/PdfWriter.java
 +                    try {
 +                        MessageDigest md5 = MessageDigest.getInstance("MD5");
 +                        byte[] hash = md5.digest(uniqueIDBytes);
-+                        fileID = PdfEncryption.createInfoId(hash);
++                        fileID = PdfEncryption.createInfoId(hash, hash);
 +                    }
 +                    catch(Exception e) {
 +                        e.printStackTrace();
@@ -191,3 +191,30 @@ Index: src/core/com/itextpdf/text/pdf/PdfWriter.java
  
                  // write the cross-reference table of the body
                  body.writeCrossReferenceTable(os, indirectCatalog.getIndirectReference(),
+Index: src/core/com/itextpdf/text/pdf/PdfEncryption.java
+===================================================================
+--- src/core/com/itextpdf/text/pdf/PdfEncryption.java	(revision 4594)
++++ src/core/com/itextpdf/text/pdf/PdfEncryption.java	(working copy)
+@@ -395,12 +395,21 @@
+ 	}
+ 
+ 	public static PdfObject createInfoId(byte id[]) {
++        return createInfoId(id, null);
++	}
++
++	public static PdfObject createInfoId(byte id[], byte[] docId) {
+ 		ByteBuffer buf = new ByteBuffer(90);
+ 		buf.append('[').append('<');
+ 		for (int k = 0; k < 16; ++k)
+ 			buf.appendHex(id[k]);
+ 		buf.append('>').append('<');
+-		id = createDocumentId();
++        if (docId != null) {
++            id = docId;
++        }
++        else {
++            id = createDocumentId();
++        }
+ 		for (int k = 0; k < 16; ++k)
+ 			buf.appendHex(id[k]);
+ 		buf.append('>').append(']');
