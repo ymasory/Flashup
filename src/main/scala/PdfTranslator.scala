@@ -48,17 +48,18 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
       
       pdfDoc close()
 
-      /* Attempt to remove creation/moddate. iText won't allow it. */
-      // val reader = new PdfReader(outFile getAbsolutePath)
-      // val stamper = new PdfStamper(reader, new FileOutputStream(new File(outFile.getAbsolutePath + "-nodate")))
-      // val info = reader getInfo()
-      // println(info.get("CreationDate"))
-      // println(info.get("ModDate"))
-      // info put (new String("CreationDate"), null)
-      // info put (new String("ModDate"), null)
-      // stamper setMoreInfo info
-      // info.keySet.toArray foreach println
-      // stamper close()
+      /* Attempt to remove creation/moddate. iText won't allow it, requires patched jar. */
+      val reader = new PdfReader(outFile getAbsolutePath)
+      val tmpFile = new File(outFile.getAbsolutePath + ".tmp")
+      val stamper = new PdfStamper(reader, new FileOutputStream(tmpFile))
+      val info = reader getInfo()
+      info put (new String("CreationDate"), null)
+      info put (new String("ModDate"), null)
+      stamper setMoreInfo info
+      stamper close()
+
+      outFile delete()
+      tmpFile renameTo outFile
     }
     catch {
       case e => e.printStackTrace

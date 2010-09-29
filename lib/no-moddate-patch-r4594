@@ -1,0 +1,13 @@
+Index: src/core/com/itextpdf/text/pdf/PdfStamperImp.java
+===================================================================
+--- src/core/com/itextpdf/text/pdf/PdfStamperImp.java	(revision 4594)
++++ src/core/com/itextpdf/text/pdf/PdfStamperImp.java	(working copy)
+@@ -343,7 +343,7 @@
+                     newInfo.put(keyName, new PdfString(value, PdfObject.TEXT_UNICODE));
+             }
+         }
+-        newInfo.put(PdfName.MODDATE, date);
++        // newInfo.put(PdfName.MODDATE, date);
+         newInfo.put(PdfName.PRODUCER, new PdfString(producer));
+         if (append) {
+             if (iInfo == null)
