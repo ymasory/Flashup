@@ -1,7 +1,75 @@
-Index: src/core/com/itextpdf/text/pdf/PdfDocument.java
+Index: core/com/itextpdf/text/DocWriter.java
 ===================================================================
---- src/core/com/itextpdf/text/pdf/PdfDocument.java	(revision 4594)
-+++ src/core/com/itextpdf/text/pdf/PdfDocument.java	(working copy)
+--- core/com/itextpdf/text/DocWriter.java	(revision 4594)
++++ core/com/itextpdf/text/DocWriter.java	(working copy)
+@@ -130,6 +130,10 @@
+         this.os = new OutputStreamCounter(new BufferedOutputStream(os));
+     }
+ 
++    public Document getDocument() {
++        return document;
++    }
++
+     // implementation of the DocListener methods
+ 
+ /**
+Index: core/com/itextpdf/text/Document.java
+===================================================================
+--- core/com/itextpdf/text/Document.java	(revision 4594)
++++ core/com/itextpdf/text/Document.java	(working copy)
+@@ -174,6 +174,12 @@
+     /** This is a chapter number in case ChapterAutoNumber is used. */
+     protected int chapternumber = 0;
+ 
++    private String uniqueID = null;
++
++    public String getUniqueID() {
++        return uniqueID;
++    }
++
+     // constructor
+ 
+ 	/**
+@@ -184,6 +190,11 @@
+         this(PageSize.A4);
+     }
+ 
++    public Document(String uniqueID) {
++        this();
++        this.uniqueID = uniqueID;
++    }
++
+ 	/**
+ 	 * Constructs a new <CODE>Document</CODE> -object.
+  *
+@@ -194,6 +205,10 @@
+     public Document(Rectangle pageSize) {
+         this(pageSize, 36, 36, 36, 36);
+     }
++    public Document(Rectangle pageSize, String uniqueID) {
++        this(pageSize);
++        this.uniqueID = uniqueID;
++    }
+ 
+ 	/**
+ 	 * Constructs a new <CODE>Document</CODE> -object.
+@@ -219,6 +234,12 @@
+         this.marginBottom = marginBottom;
+     }
+ 
++	public Document(Rectangle pageSize, float marginLeft, float marginRight,
++                    float marginTop, float marginBottom, String uniqueID) {
++        this(pageSize, marginLeft, marginRight, marginTop, marginBottom);
++        this.uniqueID = uniqueID;
++    }
++
+     // listener methods
+ 
+ 	/**
+Index: core/com/itextpdf/text/pdf/PdfDocument.java
+===================================================================
+--- core/com/itextpdf/text/pdf/PdfDocument.java	(revision 4594)
++++ core/com/itextpdf/text/pdf/PdfDocument.java	(working copy)
 @@ -112,7 +112,6 @@
          PdfInfo() {
              super();
@@ -44,10 +112,10 @@ Index: src/core/com/itextpdf/text/pdf/PdfDocument.java
                      break;
  
                  // content (text)
-Index: src/core/com/itextpdf/text/pdf/BaseFont.java
+Index: core/com/itextpdf/text/pdf/BaseFont.java
 ===================================================================
---- src/core/com/itextpdf/text/pdf/BaseFont.java	(revision 4594)
-+++ src/core/com/itextpdf/text/pdf/BaseFont.java	(working copy)
+--- core/com/itextpdf/text/pdf/BaseFont.java	(revision 4594)
++++ core/com/itextpdf/text/pdf/BaseFont.java	(working copy)
 @@ -1110,9 +1110,10 @@
       * @return the subset prefix
       */
@@ -60,3 +128,41 @@ Index: src/core/com/itextpdf/text/pdf/BaseFont.java
          return s + "+";
      }
  
+Index: core/com/itextpdf/text/pdf/PdfWriter.java
+===================================================================
+--- core/com/itextpdf/text/pdf/PdfWriter.java	(revision 4594)
++++ core/com/itextpdf/text/pdf/PdfWriter.java	(working copy)
+@@ -47,6 +47,7 @@
+ import java.io.IOException;
+ import java.io.OutputStream;
+ import java.security.cert.Certificate;
++import java.security.MessageDigest;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.HashMap;
+@@ -1212,8 +1213,23 @@
+                     encryption = encryptionObject.getIndirectReference();
+                     fileID = crypto.getFileID();
+                 }
+-                else
+-                    fileID = PdfEncryption.createInfoId(PdfEncryption.createDocumentId());
++                else {
++                    byte[] uniqueID = null;
++                    if (getDocument().getUniqueID() != null) {
++                        uniqueID = getDocument().getUniqueID().getBytes();
++                    }
++                    else {
++                        uniqueID = PdfEncryption.createDocumentId();
++                    }
++                    
++                    try {
++                        MessageDigest md5 = MessageDigest.getInstance("MD5");
++                        fileID = PdfEncryption.createInfoId(md5.digest(uniqueID));
++                    }
++                    catch(Exception e) {
++                        e.printStackTrace();
++                    }
++                }
+ 
+                 // write the cross-reference table of the body
+                 body.writeCrossReferenceTable(os, indirectCatalog.getIndirectReference(),
