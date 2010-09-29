@@ -20,6 +20,7 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
     try {
       val pdfDoc = new PdfDocument()
       pdfDoc addCreator ProgramName
+      
       pdfDoc setPageSize PageRect
       val writer = PdfWriter getInstance (pdfDoc, new FileOutputStream(outFile))
       pdfDoc open()
@@ -46,6 +47,18 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
       }
       
       pdfDoc close()
+
+      /* Attempt to remove creation/moddate. iText won't allow it. */
+      // val reader = new PdfReader(outFile getAbsolutePath)
+      // val stamper = new PdfStamper(reader, new FileOutputStream(new File(outFile.getAbsolutePath + "-nodate")))
+      // val info = reader getInfo()
+      // println(info.get("CreationDate"))
+      // println(info.get("ModDate"))
+      // info put (new String("CreationDate"), null)
+      // info put (new String("ModDate"), null)
+      // stamper setMoreInfo info
+      // info.keySet.toArray foreach println
+      // stamper close()
     }
     catch {
       case e => e.printStackTrace
