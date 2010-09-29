@@ -70,11 +70,11 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
                 case Italic => new Font(ItalicFontBf, fontSize)
                 case Bold => new Font(BoldFontBf, fontSize)
               }
-              ct addText (new Phrase(text, font))
+              ct addText (new Phrase(text, font)) //causes error on page warning on acroread
             }
           }
         }
-        ct addText(new Phrase(LF + LF, new Font(PlainFontBf, fontSize)))
+        ct addText(new Phrase(LF + LF, new Font(PlainFontBf, fontSize))) //causes error on page warning on acroread
       }
 
       ct.setAlignment(Element.ALIGN_CENTER)
@@ -135,10 +135,10 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
                 case Italic => new Font(ItalicFontBf, fontSize)
                 case Bold => new Font(BoldFontBf, fontSize)
               }
-              ct addText (new Phrase(text, font))
+              ct addText (new Phrase(text, font)) //causes error on page warning on acroread
             }
           }
-          ct addText(new Phrase(LF, new Font(PlainFontBf, fontSize)))
+          ct addText(new Phrase(LF, new Font(PlainFontBf, fontSize))) //causes error on page warning on acroread
         }
         case CodeBlock(lines) => {
           lines foreach {
@@ -148,7 +148,7 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
                   val width = MonoFontBf getWidthPoint (text, fontSize)
                   if (FrontElementsRect.getWidth < width)
                     return false
-                  ct addText (new Phrase(text + LF, new Font(MonoFontBf, fontSize)))
+                  ct addText (new Phrase(text + LF, new Font(MonoFontBf, fontSize))) //causes error on page warning on acroread
                 }
               }
             }
