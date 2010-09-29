@@ -26,6 +26,32 @@ Index: src/core/com/itextpdf/text/Document.java
      }
  
      // methods to get the layout of the document.
+Index: src/core/com/itextpdf/text/pdf/PdfDocument.java
+===================================================================
+--- src/core/com/itextpdf/text/pdf/PdfDocument.java	(revision 4594)
++++ src/core/com/itextpdf/text/pdf/PdfDocument.java	(working copy)
+@@ -112,7 +112,7 @@
+         PdfInfo() {
+             super();
+             addProducer();
+-            addCreationDate();
++            // addCreationDate();
+         }
+ 
+         /**
+@@ -193,9 +193,9 @@
+          */
+ 
+         void addCreationDate() {
+-            PdfString date = new PdfDate();
+-            put(PdfName.CREATIONDATE, date);
+-            put(PdfName.MODDATE, date);
++            // PdfString date = new PdfDate();
++            // put(PdfName.CREATIONDATE, date);
++            // put(PdfName.MODDATE, date);
+         }
+ 
+         void addkey(String key, String value) {
 Index: src/core/com/itextpdf/text/pdf/PdfStamperImp.java
 ===================================================================
 --- src/core/com/itextpdf/text/pdf/PdfStamperImp.java	(revision 4594)
