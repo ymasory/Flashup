@@ -98,7 +98,7 @@ final case class Span(text: String, dec: TextDecoration) {
   }
 }
 sealed abstract class TextDecoration
-object Plain extends TextDecoration
-object Mono extends TextDecoration
-object Bold extends TextDecoration
-object Italic extends TextDecoration
+case object Plain extends TextDecoration
+case object Mono extends TextDecoration
+case object Bold extends TextDecoration
+case object Italic extends TextDecoration
