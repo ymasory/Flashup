@@ -1,7 +1,7 @@
-Index: core/com/itextpdf/text/DocWriter.java
+Index: src/core/com/itextpdf/text/DocWriter.java
 ===================================================================
---- core/com/itextpdf/text/DocWriter.java	(revision 4594)
-+++ core/com/itextpdf/text/DocWriter.java	(working copy)
+--- src/core/com/itextpdf/text/DocWriter.java	(revision 4594)
++++ src/core/com/itextpdf/text/DocWriter.java	(working copy)
 @@ -130,6 +130,10 @@
          this.os = new OutputStreamCounter(new BufferedOutputStream(os));
      }
@@ -13,10 +13,10 @@ Index: core/com/itextpdf/text/DocWriter.java
      // implementation of the DocListener methods
  
  /**
-Index: core/com/itextpdf/text/Document.java
+Index: src/core/com/itextpdf/text/Document.java
 ===================================================================
---- core/com/itextpdf/text/Document.java	(revision 4594)
-+++ core/com/itextpdf/text/Document.java	(working copy)
+--- src/core/com/itextpdf/text/Document.java	(revision 4594)
++++ src/core/com/itextpdf/text/Document.java	(working copy)
 @@ -174,6 +174,12 @@
      /** This is a chapter number in case ChapterAutoNumber is used. */
      protected int chapternumber = 0;
@@ -66,10 +66,10 @@ Index: core/com/itextpdf/text/Document.java
      // listener methods
  
  	/**
-Index: core/com/itextpdf/text/pdf/PdfDocument.java
+Index: src/core/com/itextpdf/text/pdf/PdfDocument.java
 ===================================================================
---- core/com/itextpdf/text/pdf/PdfDocument.java	(revision 4594)
-+++ core/com/itextpdf/text/pdf/PdfDocument.java	(working copy)
+--- src/core/com/itextpdf/text/pdf/PdfDocument.java	(revision 4594)
++++ src/core/com/itextpdf/text/pdf/PdfDocument.java	(working copy)
 @@ -112,7 +112,6 @@
          PdfInfo() {
              super();
@@ -112,10 +112,10 @@ Index: core/com/itextpdf/text/pdf/PdfDocument.java
                      break;
  
                  // content (text)
-Index: core/com/itextpdf/text/pdf/BaseFont.java
+Index: src/core/com/itextpdf/text/pdf/BaseFont.java
 ===================================================================
---- core/com/itextpdf/text/pdf/BaseFont.java	(revision 4594)
-+++ core/com/itextpdf/text/pdf/BaseFont.java	(working copy)
+--- src/core/com/itextpdf/text/pdf/BaseFont.java	(revision 4594)
++++ src/core/com/itextpdf/text/pdf/BaseFont.java	(working copy)
 @@ -1110,9 +1110,10 @@
       * @return the subset prefix
       */
@@ -128,10 +128,10 @@ Index: core/com/itextpdf/text/pdf/BaseFont.java
          return s + "+";
      }
  
-Index: core/com/itextpdf/text/pdf/PdfWriter.java
+Index: src/core/com/itextpdf/text/pdf/PdfWriter.java
 ===================================================================
---- core/com/itextpdf/text/pdf/PdfWriter.java	(revision 4594)
-+++ core/com/itextpdf/text/pdf/PdfWriter.java	(working copy)
+--- src/core/com/itextpdf/text/pdf/PdfWriter.java	(revision 4594)
++++ src/core/com/itextpdf/text/pdf/PdfWriter.java	(working copy)
 @@ -47,6 +47,7 @@
  import java.io.IOException;
  import java.io.OutputStream;
@@ -140,24 +140,49 @@ Index: core/com/itextpdf/text/pdf/PdfWriter.java
  import java.util.ArrayList;
  import java.util.Arrays;
  import java.util.HashMap;
-@@ -1212,8 +1213,23 @@
+@@ -107,6 +108,8 @@
+ 	 */
+ 	public static final int GENERATION_MAX = 65535;
+ 
++    private static String uniqueID = null;
++
+ // INNER CLASSES
+ 
+     /**
+@@ -610,6 +613,7 @@
+ 
+     public static PdfWriter getInstance(Document document, OutputStream os)
+     throws DocumentException {
++        uniqueID = document.getUniqueID();
+         PdfDocument pdf = new PdfDocument();
+         document.addDocListener(pdf);
+         PdfWriter writer = new PdfWriter(pdf, os);
+@@ -629,6 +633,7 @@
+ 
+     public static PdfWriter getInstance(Document document, OutputStream os, DocListener listener)
+     throws DocumentException {
++        uniqueID = document.getUniqueID();
+         PdfDocument pdf = new PdfDocument();
+         pdf.addDocListener(listener);
+         document.addDocListener(pdf);
+@@ -1212,8 +1217,23 @@
                      encryption = encryptionObject.getIndirectReference();
                      fileID = crypto.getFileID();
                  }
 -                else
 -                    fileID = PdfEncryption.createInfoId(PdfEncryption.createDocumentId());
 +                else {
-+                    byte[] uniqueID = null;
-+                    if (getDocument().getUniqueID() != null) {
-+                        uniqueID = getDocument().getUniqueID().getBytes();
++                    byte[] uniqueIDBytes = null;
++                    if (uniqueID != null) {
++                        uniqueIDBytes = uniqueID.getBytes();
 +                    }
 +                    else {
-+                        uniqueID = PdfEncryption.createDocumentId();
++                        uniqueIDBytes = PdfEncryption.createDocumentId();
 +                    }
-+                    
 +                    try {
 +                        MessageDigest md5 = MessageDigest.getInstance("MD5");
-+                        fileID = PdfEncryption.createInfoId(md5.digest(uniqueID));
++                        byte[] hash = md5.digest(uniqueIDBytes);
++                        fileID = PdfEncryption.createInfoId(hash);
 +                    }
 +                    catch(Exception e) {
 +                        e.printStackTrace();
