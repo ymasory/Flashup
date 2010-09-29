@@ -60,3 +60,18 @@ Index: src/core/com/itextpdf/text/pdf/BaseFont.java
          return s + "+";
      }
  
+Index: src/core/com/itextpdf/text/pdf/PdfEncryption.java
+===================================================================
+--- src/core/com/itextpdf/text/pdf/PdfEncryption.java	(revision 4594)
++++ src/core/com/itextpdf/text/pdf/PdfEncryption.java	(working copy)
+@@ -332,9 +332,7 @@
+ 		} catch (Exception e) {
+ 			throw new ExceptionConverter(e);
+ 		}
+-		long time = System.currentTimeMillis();
+-		long mem = Runtime.getRuntime().freeMemory();
+-		String s = time + "+" + mem + "+" + (seq++);
++		String s = "";
+ 		return md5.digest(s.getBytes());
+ 	}
+ 
