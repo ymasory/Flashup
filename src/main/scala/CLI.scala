@@ -15,49 +15,34 @@ object CLI {
   val FlashcardExtension = "flashup"
 
   //short opts
-  val (fronts, backs, all) = ("fronts", "backs", "all")
+  val shortOpts @ (fronts, backs, all) = ("fronts", "backs", "all")
 
   //long opts
-  val (usi, usl, uss, a4l, a4s, txt, input) =
-    ("usi", "usl", "uss", "a4l", "a4s", "txt", "input")
+  val longOpts @ (usi, usl, uss, a4l, a4s, txt) =
+    ("usi", "usl", "uss", "a4l", "a4s", "txt")
 
   lazy val jsap = {
     val jsap = new JSAP()
-    val frontsSwitch = new Switch(fronts)
-      .setShortFlag(fronts(0))
-    jsap registerParameter frontsSwitch
-    val backsSwitch = new Switch(backs)
-      .setShortFlag(backs(0))
-    jsap registerParameter backsSwitch
-    val allSwitch = new Switch(all)
-      .setShortFlag(all(0))
-    jsap registerParameter allSwitch
-    val pdfSwitch = new Switch(usi)
-      .setLongFlag(usi)
-    jsap registerParameter pdfSwitch
-    val txtSwitch = new Switch(txt)
-      .setLongFlag(txt)
-    jsap registerParameter txtSwitch
-    val uslOption = new Switch(usl)
-      .setLongFlag(usl)
-    jsap registerParameter uslOption
-    val ussOption = new Switch(uss)
-      .setLongFlag(uss)
-    jsap registerParameter ussOption
-    val a4lOption = new Switch(a4l)
-      .setLongFlag(a4l)
-    jsap registerParameter a4lOption
-    val a4sOption = new Switch(a4s)
-      .setLongFlag(a4s)
-    jsap registerParameter a4sOption
-    val inputOption = new UnflaggedOption(input)
-      .setStringParser(FileStringParser.getParser().setMustBeFile(true).setMustExist(true))
-      .setRequired(true)
-    jsap registerParameter inputOption
-      
+    shortOpts.productIterator foreach { opt =>
+      val switch = new Switch(opt toString)
+        .setShortFlag(opt.toString.apply(0))
+      jsap registerParameter switch
+    }
+    longOpts.productIterator foreach { opt =>
+      val switch = new Switch(opt toString)
+        .setLongFlag(opt.toString)
+      jsap registerParameter switch
+    }      
     jsap
   }
   
+  val input = "input"
+  val inputOption = new UnflaggedOption(input)
+    .setStringParser(FileStringParser.getParser().setMustBeFile(true).setMustExist(true))
+    .setRequired(true)
+  jsap registerParameter inputOption
+
+
   def usage(config: JSAPResult) = {
     val builder = new java.lang.StringBuilder
 
@@ -71,20 +56,22 @@ object CLI {
     builder append (jsap.getUsage + LF)
     builder append LF
     builder append ("Short Options:" + LF)
-    builder append ("  -" + fronts(0)  + " - only generate the fronts of the flashcards" + LF)
-    builder append ("  -" + backs(0) + " - only generate the backs of the flashcards" + LF)
+    builder append ("  -" + fronts(0)  + " - generate only the fronts of the flashcards (Default)" + LF)
+    builder append ("  -" + backs(0) + " - generate only the backs of the flashcards" + LF)
     builder append ("  -" + all(0) + " - generate both fronts and backs" + LF)
     builder append LF
+    builder append ("  Multiple side options can be used." + LF)
+    builder append LF
     builder append ("Long Options:" + LF)
-    builder append ("  --" + usi + " - output to Index Card (3in x 5in) PDF" + LF)
+    builder append ("  --" + usi + " - output to Index Card (3in x 5in) PDF (Default)" + LF)
     builder append ("  --" + usl + " - output to US Letter (8.5in x 11in) PDF, arranged for long flip" + LF)
     builder append ("  --" + uss + " - output to US Letter (8.5in x 11in) PDF, arranged for short flip" + LF)
     builder append ("  --" + a4l + " - output to A4 PDF (210mm x 297mm) PDF, arranged for long flip" + LF)
     builder append ("  --" + a4s + " - output to A4 PDF (210mm x 297mm) PDF, arranged for short flip" + LF)
     builder append ("  --" + txt + " - output to text format (ignores -b/f, used for debugging)" + LF)
     builder append LF
-    builder append ("Multiple formats can be selected." + LF)
-    builder append ("If no output format is chosen, usi is used." + LF)
+    builder append ("  Multiple formats can be selected." + LF)
+    builder append ("  If no output format is chosen, usi is used." + LF)
     builder append LF
     builder append ("Examples:" + LF)
     builder append ("  java -jar " + ProgramName + ".jar --" + usi + " path/to/input." + FlashcardExtension)
