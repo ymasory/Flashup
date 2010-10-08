@@ -14,25 +14,30 @@ object CLI {
   val ProgramName = "flashup"
   val FlashcardExtension = "flashup"
 
-  val (backs, fronts, usi, usl, uss, a4l, a4s, text, input) =
-    ("backs", "fronts", "usi", "usl", "uss", "a4l", "a4s", "txt", "input")
+  //short opts
+  val (fronts, backs, all) = ("fronts", "backs", "all")
+
+  //long opts
+  val (usi, usl, uss, a4l, a4s, txt, input) =
+    ("usi", "usl", "uss", "a4l", "a4s", "txt", "input")
 
   lazy val jsap = {
     val jsap = new JSAP()
-    val backsSwitch = new Switch(backs)
-      .setShortFlag('b')
-      .setLongFlag(backs)
-    jsap registerParameter backsSwitch
     val frontsSwitch = new Switch(fronts)
-      .setShortFlag('f')
-      .setLongFlag(fronts)
+      .setShortFlag(fronts(0))
     jsap registerParameter frontsSwitch
+    val backsSwitch = new Switch(backs)
+      .setShortFlag(backs(0))
+    jsap registerParameter backsSwitch
+    val allSwitch = new Switch(all)
+      .setShortFlag(all(0))
+    jsap registerParameter allSwitch
     val pdfSwitch = new Switch(usi)
       .setLongFlag(usi)
     jsap registerParameter pdfSwitch
-    val textSwitch = new Switch(text)
-      .setLongFlag(text)
-    jsap registerParameter textSwitch
+    val txtSwitch = new Switch(txt)
+      .setLongFlag(txt)
+    jsap registerParameter txtSwitch
     val uslOption = new Switch(usl)
       .setLongFlag(usl)
     jsap registerParameter uslOption
@@ -65,21 +70,24 @@ object CLI {
     builder append ("Usage: java -jar " + ProgramName + ".jar ") + LF
     builder append (jsap.getUsage + LF)
     builder append LF
-    builder append ("Options:" + LF)
-    builder append ("  -f/--fronts - only generate the fronts of the flashcards (Optional)" + LF)
-    builder append ("  -b/--backs  - only generate the backs of the flashcards (Optional)" + LF)
-    builder append ("  --usi - output to Index Card (3in x 5in) PDF" + LF)
-    builder append ("  --usl - output to US Letter (8.5in x 11in) PDF, arranged for long flip" + LF)
-    builder append ("  --uss - output to US Letter (8.5in x 11in) PDF, arranged for short flip" + LF)
-    builder append ("  --a4l - output to A4 PDF (210mm x 297mm) PDF, arranged for long flip" + LF)
-    builder append ("  --a4s - output to A4 PDF (210mm x 297mm) PDF, arranged for short flip" + LF)
-    builder append ("  --txt - output to text format (ignores -b/f, used for debugging)" + LF)
+    builder append ("Short Options:" + LF)
+    builder append ("  -" + fronts(0)  + " - only generate the fronts of the flashcards" + LF)
+    builder append ("  -" + backs(0) + " - only generate the backs of the flashcards" + LF)
+    builder append ("  -" + all(0) + " - generate both fronts and backs" + LF)
+    builder append LF
+    builder append ("Long Options:" + LF)
+    builder append ("  --" + usi + " - output to Index Card (3in x 5in) PDF" + LF)
+    builder append ("  --" + usl + " - output to US Letter (8.5in x 11in) PDF, arranged for long flip" + LF)
+    builder append ("  --" + uss + " - output to US Letter (8.5in x 11in) PDF, arranged for short flip" + LF)
+    builder append ("  --" + a4l + " - output to A4 PDF (210mm x 297mm) PDF, arranged for long flip" + LF)
+    builder append ("  --" + a4s + " - output to A4 PDF (210mm x 297mm) PDF, arranged for short flip" + LF)
+    builder append ("  --" + txt + " - output to text format (ignores -b/f, used for debugging)" + LF)
     builder append LF
     builder append ("Multiple formats can be selected." + LF)
     builder append ("If no output format is chosen, usi is used." + LF)
     builder append LF
     builder append ("Examples:" + LF)
-    builder append ("  java -jar " + ProgramName + ".jar --usi path/to/input." + FlashcardExtension)
+    builder append ("  java -jar " + ProgramName + ".jar --" + usi + " path/to/input." + FlashcardExtension)
     builder append LF
     
     builder toString
@@ -113,7 +121,7 @@ object CLI {
     val config = jsap.parse(args)
     config.success match {
       case true => {
-        var sides: Pages.Value = Pages.All
+        var sides: Pages.Value = Pages.Both
         var outType: OutType.Value = OutType.USI
         val inFile = config.getFile(input)
         if (config getBoolean(backs))
@@ -122,7 +130,7 @@ object CLI {
           sides = Pages.Fronts
         if (config getBoolean(usi))
           outType = OutType.USI
-        if (config getBoolean(text))
+        if (config getBoolean(txt))
           outType = OutType.TXT
 
         val outFile = {
@@ -138,7 +146,7 @@ object CLI {
             sides match {
               case Pages.Fronts => "-fronts"
               case Pages.Backs => "-backs"
-              case Pages.All => ""
+              case Pages.Both => ""
             }
           }
 
@@ -168,5 +176,5 @@ object OutType extends Enumeration {
 }
 
 object Pages extends Enumeration {
-  val Fronts, Backs, All = Value
+  val Fronts, Backs, Both = Value
 }
