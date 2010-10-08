@@ -14,8 +14,9 @@ object CLI {
   val ProgramName = "flashup"
   val FlashcardExtension = "flashup"
 
-  val (backs, fronts, pdf, text, input, output) =
-    ("backs", "fronts", "pdf", "text", "input", "output")
+  val (backs, fronts, usi, usl, uss, a4l, a4s, text, input) =
+    ("backs", "fronts", "usi", "usl", "uss", "a4l", "a4s", "txt", "input")
+
   lazy val jsap = {
     val jsap = new JSAP()
     val backsSwitch = new Switch(backs)
@@ -26,20 +27,28 @@ object CLI {
       .setShortFlag('f')
       .setLongFlag(fronts)
     jsap registerParameter frontsSwitch
-    val pdfSwitch = new Switch(pdf)
-      .setLongFlag(pdf)
+    val pdfSwitch = new Switch(usi)
+      .setLongFlag(usi)
     jsap registerParameter pdfSwitch
     val textSwitch = new Switch(text)
       .setLongFlag(text)
     jsap registerParameter textSwitch
+    val uslOption = new Switch(usl)
+      .setLongFlag(usl)
+    jsap registerParameter uslOption
+    val ussOption = new Switch(uss)
+      .setLongFlag(uss)
+    jsap registerParameter ussOption
+    val a4lOption = new Switch(a4l)
+      .setLongFlag(a4l)
+    jsap registerParameter a4lOption
+    val a4sOption = new Switch(a4s)
+      .setLongFlag(a4s)
+    jsap registerParameter a4sOption
     val inputOption = new UnflaggedOption(input)
       .setStringParser(FileStringParser.getParser().setMustBeFile(true).setMustExist(true))
       .setRequired(true)
     jsap registerParameter inputOption
-    val outputOption = new UnflaggedOption(output)
-      .setStringParser(FileStringParser.getParser().setMustBeFile(true).setMustExist(false))
-      .setRequired(false)
-    jsap registerParameter outputOption
       
     jsap
   }
@@ -58,12 +67,19 @@ object CLI {
     builder append LF
     builder append ("Options:" + LF)
     builder append ("  -f/--fronts - only generate the fronts of the flashcards (Optional)" + LF)
-    builder append ("  -b/--backs - only generate the backs of the flashcards (Optional)" + LF)
-    builder append ("  --pdf      - output to PDF format" + LF)
-    builder append ("  --text     - output to text format (ignores -b/f, used for debugging)" + LF)
+    builder append ("  -b/--backs  - only generate the backs of the flashcards (Optional)" + LF)
+    builder append ("  --usi - output to Index Card (3in x 5in) PDF" + LF)
+    builder append ("  --usl - output to US Letter (8.5in x 11in) PDF, arranged for long flip" + LF)
+    builder append ("  --uss - output to US Letter (8.5in x 11in) PDF, arranged for short flip" + LF)
+    builder append ("  --a4l - output to A4 PDF (210mm x 297mm) PDF, arranged for long flip" + LF)
+    builder append ("  --a4s - output to A4 PDF (210mm x 297mm) PDF, arranged for short flip" + LF)
+    builder append ("  --txt - output to text format (ignores -b/f, used for debugging)" + LF)
+    builder append LF
+    builder append ("Multiple formats can be selected." + LF)
+    builder append ("If no output format is chosen, usi is used." + LF)
     builder append LF
     builder append ("Examples:" + LF)
-    builder append ("  java -jar " + ProgramName + ".jar --pdf path/to/input." + FlashcardExtension)
+    builder append ("  java -jar " + ProgramName + ".jar --usi path/to/input." + FlashcardExtension)
     builder append LF
     
     builder toString
@@ -98,40 +114,36 @@ object CLI {
     config.success match {
       case true => {
         var sides: Pages.Value = Pages.All
-        var outType: OutType.Value = OutType.Pdf
-        var outFile = config.getFile(output)
+        var outType: OutType.Value = OutType.USI
         val inFile = config.getFile(input)
         if (config getBoolean(backs))
           sides = Pages.Backs
         if (config getBoolean(fronts))
           sides = Pages.Fronts
-        if (config getBoolean(pdf))
-          outType = OutType.Pdf
+        if (config getBoolean(usi))
+          outType = OutType.USI
         if (config getBoolean(text))
-          outType = OutType.Text
+          outType = OutType.TXT
 
-        outFile = outFile match {
-          case f: File => f
-          case _ => {
-            val par = inFile.getParentFile
-            val tmp1 = inFile.getName
-            val tmp2 = {
-              tmp1.split("""\.""") match {
-                case a @ Array(_, _*) => a.head.mkString
-                case _ => tmp1
-              }
+        val outFile = {
+          val par = inFile.getParentFile
+          val tmp1 = inFile.getName
+          val tmp2 = {
+            tmp1.split("""\.""") match {
+              case a @ Array(_, _*) => a.head.mkString
+              case _ => tmp1
             }
-            val tmp3 = tmp2 + {
-              sides match {
-                case Pages.Fronts => "-fronts"
-                case Pages.Backs => "-backs"
-                case Pages.All => ""
-              }
-            }
-
-            val newName = tmp3 + ".pdf"
-            new File(newName)
           }
+          val tmp3 = tmp2 + {
+            sides match {
+              case Pages.Fronts => "-fronts"
+              case Pages.Backs => "-backs"
+              case Pages.All => ""
+            }
+          }
+
+          val newName = tmp3 + ".pdf"
+          new File(newName)
         }
 
         Some(outType, sides, inFile, outFile)
@@ -144,8 +156,15 @@ object CLI {
   }
 }
 object OutType extends Enumeration {
-  val Pdf, Text = Value
-  val outputMap = Map(Pdf -> PdfTranslator, Text -> TxtTranslator)
+  val USI, USS, USL, A4S, A4L, TXT = Value
+  val outputMap = Map(
+    USI -> PdfTranslator,
+    USS -> PdfTranslator,
+    USL -> PdfTranslator,
+    A4S -> PdfTranslator,
+    A4L -> PdfTranslator,
+    TXT -> TxtTranslator
+  )
 }
 
 object Pages extends Enumeration {
