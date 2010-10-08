@@ -82,20 +82,24 @@ object CLI {
 
   def main(args: Array[String]) {
     parseArgs(args) match {
-      case Some((outType, pages, inFile, outFile)) => {
+      case Some((outTypes, sides, inFile)) => {
         val res = FlashcardParser.parseDoc(inFile)
         res match {
           case Some(doc) => {
             try {
-              val translator = OutType.outputMap(outType)
-              translator.translate(doc, pages, outFile)
+              for (outType <- outTypes) {
+                for (side <- sides) {
+                  val translator = OutType.outputMap(outType)
+                  translator.translate(doc, side, null)
+                }
+              }
             }
             catch {
               case e: Exception => e.printStackTrace()
             }
           }
           case None => {
-            Console.err println ("Could not parse: " + inFile.getAbsolutePath)
+            Console.err println ("Could not parse: " + inFile)
             exit(1)
           }
         }
@@ -104,44 +108,31 @@ object CLI {
     }
   }
 
-  private[flashcards] def parseArgs(args: Array[String]): Option[(OutType.Value, Pages.Value, File, File)] = {
+  private def outputName(inFile: File, side: Pages.Value, outType: OutType.Value): String = {
+    val inName = inFile getName
+    val baseName = {
+      inName.split("""\.""") match {
+        case a @ Array(_, _*) => a.head.mkString
+        case _ => inName
+      }
+    }
+    ""
+  }
+
+  private[flashcards] def parseArgs(args: Array[String]): Option[(List[OutType.Value], List[Pages.Value], File)] = {
     val config = jsap.parse(args)
     config.success match {
       case true => {
-        var sides: Pages.Value = Pages.Both
-        var outType: OutType.Value = OutType.USI
-        val inFile = config.getFile(input)
-        if (config getBoolean(backs))
-          sides = Pages.Backs
-        if (config getBoolean(fronts))
-          sides = Pages.Fronts
-        if (config getBoolean(usi))
-          outType = OutType.USI
-        if (config getBoolean(txt))
-          outType = OutType.TXT
-
-        val outFile = {
-          val par = inFile.getParentFile
-          val tmp1 = inFile.getName
-          val tmp2 = {
-            tmp1.split("""\.""") match {
-              case a @ Array(_, _*) => a.head.mkString
-              case _ => tmp1
-            }
-          }
-          val tmp3 = tmp2 + {
-            sides match {
-              case Pages.Fronts => "-fronts"
-              case Pages.Backs => "-backs"
-              case Pages.Both => ""
-            }
-          }
-
-          val newName = tmp3 + ".pdf"
-          new File(newName)
+        val sides = for (opt <- shortOpts.productIterator) yield {
+          if (config getBoolean opt.toString)
+            opt
+        }
+        val outTypes = for (opt <- longOpts.productIterator) yield {
+          if (config getBoolean opt.toString)
+            opt
         }
 
-        Some(outType, sides, inFile, outFile)
+        Some(Nil, Nil, config getFile input)
       }
       case false => {
         Console.err println usage(config)
