@@ -23,6 +23,7 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
       
       pdfDoc setPageSize PageRect
       val writer = PdfWriter getInstance (pdfDoc, new FileOutputStream(outFile))
+      writer.getAcroForm() setNeedAppearances true
       pdfDoc open()
       val canvas = writer.getDirectContentUnder
       (0 until flashDoc.cards.length) foreach { i =>
@@ -71,7 +72,7 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
                 case Italic => new Font(ItalicFontBf, fontSize)
                 case Bold => new Font(BoldFontBf, fontSize)
               }
-              ct addText (new Phrase(text, font)) //causes error on page warning on acroread
+              ct addText (new Phrase(text)) //causes error on page warning on acroread
             }
           }
         }
@@ -247,6 +248,7 @@ private[flashcards] object PdfConstants {
   val MonoFontBf = BaseFont createFont()
   val ItalicFontBf = BaseFont createFont()
   val BoldFontBf = BaseFont createFont()
+
   val TopFontBf = BoldFontBf
   val PageNumFontBf = PlainFontBf
 }
