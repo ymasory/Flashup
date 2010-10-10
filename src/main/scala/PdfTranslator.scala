@@ -65,9 +65,10 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
       front.frontEls foreach {
         case FrontElement(Stretch(spans)) => {
           spans foreach {
+            case Span(text, Plain) =>
+              ct addText (new Phrase(text, null)) //causes error on page warning on acroread
             case Span(text, dec) => {
-              val font = dec match {
-                case Plain => new Font(PlainFontBf, fontSize)
+              val font = (dec: @unchecked) match {
                 case Mono => new Font(MonoFontBf, fontSize)
                 case Italic => new Font(ItalicFontBf, fontSize)
                 case Bold => new Font(BoldFontBf, fontSize)
@@ -242,14 +243,10 @@ private[flashcards] object PdfConstants {
   val FrontElementFontSize = 16
   val BackElementFontSize = 12
 
-  // val PlainFontBf = BaseFont createFont ("/freefont/FreeSans.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
-  // val MonoFontBf = BaseFont createFont ("/freefont/FreeMono.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
-  // val ItalicFontBf = BaseFont createFont ("/freefont/FreeSansOblique.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
-  // val BoldFontBf = BaseFont createFont ("/freefont/FreeSansBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
-  val PlainFontBf = BaseFont createFont()
-  val MonoFontBf = BaseFont createFont()
-  val ItalicFontBf = BaseFont createFont()
-  val BoldFontBf = BaseFont createFont()
+  val PlainFontBf = BaseFont createFont ("/freefont/FreeSans.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
+  val MonoFontBf = BaseFont createFont ("/freefont/FreeMono.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
+  val ItalicFontBf = BaseFont createFont ("/freefont/FreeSansOblique.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
+  val BoldFontBf = BaseFont createFont ("/freefont/FreeSansBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
 
   val TopFontBf = BoldFontBf
   val PageNumFontBf = PlainFontBf
