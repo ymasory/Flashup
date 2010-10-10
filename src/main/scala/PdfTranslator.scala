@@ -17,14 +17,6 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
   import PdfConstants._
 
   override def translate(flashDoc: Document, sides: Pages.Value, outFile: File): Unit = {
-
-    val selector = new FontSelector()
-    FontFactory registerDirectories()
-    FontFactory.getRegisteredFonts.toArray foreach { fontName =>
-      selector addFont FontFactory.getFont(fontName.toString)
-    }
-
-
     try {
       val pdfDoc = new ITextDocument(flashDoc.hashCode.toString)
       pdfDoc addCreator ProgramName
@@ -74,7 +66,7 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
         case FrontElement(Stretch(spans)) => {
           spans foreach {
             case Span(text, Plain) => {
-              // ct addText (new Phrase(text, null)) //causes error on page warning on acroread
+              ct addText (selector.process(text)) //causes error on page warning on acroread
             }
             case Span(text, dec) => {
               val font = (dec: @unchecked) match {
@@ -231,6 +223,12 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
 }
 
 private[flashcards] object PdfConstants {
+
+  val selector = new FontSelector()
+  FontFactory registerDirectories()
+  FontFactory.getRegisteredFonts.toArray foreach { fontName =>
+    selector addFont FontFactory.getFont(fontName.toString)
+  }
 
   val LeadingMultiplier = 1.25f
 
