@@ -21,5 +21,3 @@ Build
 6. ``quit`` (leave sbt)
 7. ``java -jar target/scala_*/flashup-*.min.jar samples/sample.flashup``
 8. open ``sample.pdf`` in your favorite PDF viewer
-
-**NOTE**: The bleeding-edge version in the repository may not work. Consider using the most recent tag in the Git repository by clicking the GitHub downloads button on the repo hompage.
