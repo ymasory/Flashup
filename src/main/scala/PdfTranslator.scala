@@ -65,8 +65,9 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
       front.frontEls foreach {
         case FrontElement(Stretch(spans)) => {
           spans foreach {
-            case Span(text, Plain) =>
-              ct addText (new Phrase(text, null)) //causes error on page warning on acroread
+            case Span(text, Plain) => {
+              // ct addText (new Phrase(text, null)) //causes error on page warning on acroread
+            }
             case Span(text, dec) => {
               val font = (dec: @unchecked) match {
                 case Mono => new Font(MonoFontBf, fontSize)
@@ -223,7 +224,11 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
 
 private[flashcards] object PdfConstants {
 
-  FontFactory registerDirectories()
+  // val selector = new FontSelector()
+  // FontFactory registerDirectories()
+  // FontFactory.getRegisteredFonts.toArray(Array[Font]()) foreach { font =>
+  //   // selector addFont font
+  // }
 
   val LeadingMultiplier = 1.25f
 
@@ -231,7 +236,12 @@ private[flashcards] object PdfConstants {
   val LRBMargin = millimetersToPoints(5.5f)
 
   val PageRect = new Rectangle(inchesToPoints(5), inchesToPoints(3))
-  val FrontElementsRect = new Rectangle(LRBMargin, LRBMargin * 2, PageRect.getWidth - LRBMargin, PageRect.getHeight - (TMargin * 2))
+  val FrontElementsRect = new Rectangle(
+    LRBMargin,
+    LRBMargin * 2,
+    PageRect.getWidth - LRBMargin,
+    PageRect.getHeight - (TMargin * 2)
+  )
   val BackRect = new Rectangle(LRBMargin, LRBMargin, PageRect.getWidth - LRBMargin, PageRect.getHeight - LRBMargin)
 
   val TopLeftWidth = (PageRect.getWidth - (LRBMargin + LRBMargin)) * (2./3.) - (0.5 * millimetersToPoints(5))
