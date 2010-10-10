@@ -72,7 +72,7 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
                 case Italic => new Font(ItalicFontBf, fontSize)
                 case Bold => new Font(BoldFontBf, fontSize)
               }
-              ct addText (new Phrase(text)) //causes error on page warning on acroread
+              ct addText (new Phrase(text, font)) //causes error on page warning on acroread
             }
           }
         }
@@ -221,6 +221,8 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
 }
 
 private[flashcards] object PdfConstants {
+
+  FontFactory registerDirectories()
 
   val LeadingMultiplier = 1.25f
 
