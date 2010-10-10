@@ -4,7 +4,7 @@ import java.lang.Math
 
 import java.io.{File, FileOutputStream, StringReader}
 
-import com.itextpdf.text.{Document => ITextDocument, _}
+import com.itextpdf.text.{Document => ITextDocument, List => _, _}
 import com.itextpdf.text.Font._
 import com.itextpdf.text.Utilities._
 
@@ -16,41 +16,41 @@ import CLI.ProgramName
 private[flashcards] object PdfTranslator extends FlashcardTranslator {
   import PdfConstants._
 
-  override def translate(flashDoc: Document, sides: Pages.Value, outFile: File): Unit = {
-    try {
-      val pdfDoc = new ITextDocument(flashDoc.hashCode.toString)
-      pdfDoc addCreator ProgramName
+  override def translate(instances: List[TranslationInstance]): Unit = {
+    // try {
+    //   val pdfDoc = new ITextDocument(flashDoc.hashCode.toString)
+    //   pdfDoc addCreator ProgramName
       
-      pdfDoc setPageSize PageRect
-      val writer = PdfWriter getInstance (pdfDoc, new FileOutputStream(outFile))
-      pdfDoc open()
-      val canvas = writer.getDirectContentUnder
-      (0 until flashDoc.cards.length) foreach { i =>
-        val card = flashDoc.cards(i)
-        val topLeftStr: String = flashDoc.topLeftValue getOrElse ""
-        val topRightStr: String = flashDoc.topRightValue getOrElse ""
-        val useNumbering: Boolean = flashDoc.useNumbering
-        if (sides != Pages.Backs) {
-          pdfDoc newPage()
-          drawDirectiveVals(
-            canvas,
-            topLeftStr,
-            topRightStr,
-            if (useNumbering) {(i + 1).toString} else ""
-          )
-          drawFront(canvas, card.front)
-        }
-        if (sides != Pages.Fronts) {
-          pdfDoc newPage()
-          drawBack (canvas, card.back)
-        }
-      }
+    //   pdfDoc setPageSize PageRect
+    //   val writer = PdfWriter getInstance (pdfDoc, new FileOutputStream(outFile))
+    //   pdfDoc open()
+    //   val canvas = writer.getDirectContentUnder
+    //   (0 until flashDoc.cards.length) foreach { i =>
+    //     val card = flashDoc.cards(i)
+    //     val topLeftStr: String = flashDoc.topLeftValue getOrElse ""
+    //     val topRightStr: String = flashDoc.topRightValue getOrElse ""
+    //     val useNumbering: Boolean = flashDoc.useNumbering
+    //     if (sides != Pages.Backs) {
+    //       pdfDoc newPage()
+    //       drawDirectiveVals(
+    //         canvas,
+    //         topLeftStr,
+    //         topRightStr,
+    //         if (useNumbering) {(i + 1).toString} else ""
+    //       )
+    //       drawFront(canvas, card.front)
+    //     }
+    //     if (sides != Pages.Fronts) {
+    //       pdfDoc newPage()
+    //       drawBack (canvas, card.back)
+    //     }
+    //   }
       
-      pdfDoc close()
-    }
-    catch {
-      case e => e.printStackTrace
-    }
+    //   pdfDoc close()
+    // }
+    // catch {
+    //   case e => e.printStackTrace
+    // }
   }
 
   def drawFront(canvas: PdfContentByte, front: Front) {

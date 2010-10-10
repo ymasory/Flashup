@@ -89,8 +89,8 @@ object CLI {
             try {
               for (outType <- outTypes) {
                 for (side <- sides) {
-                  val translator = OutType.outputMap(outType)
-                  translator.translate(doc, side, null)
+                  // val translator = OutType.outputMap(outType)
+                  // translator.translate(doc, side, null)
                 }
               }
             }
