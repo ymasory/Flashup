@@ -222,6 +222,12 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
 
 private[flashcards] object PdfConstants {
 
+  // lazy val plainSelector = {
+  //   val plainSelector = new FontSelector()
+  //   plainSelector addFont FontFactory.getFont("")
+  //   plainSelector
+  // }
+
   lazy val LeadingMultiplier = 1.25f
 
   lazy val TMargin = millimetersToPoints(5.5f)
