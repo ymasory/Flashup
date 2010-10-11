@@ -65,14 +65,12 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
       front.frontEls foreach {
         case FrontElement(Stretch(spans)) => {
           spans foreach {
-            case Span(text, Plain) => {
-              ct addText (selector.process(text)) //causes error on page warning on acroread
-            }
             case Span(text, dec) => {
-              val font = (dec: @unchecked) match {
+              val font = dec match {
                 case Mono => new Font(MonoFontBf, fontSize)
                 case Italic => new Font(ItalicFontBf, fontSize)
                 case Bold => new Font(BoldFontBf, fontSize)
+                case Plain => new Font(GreekFontBf, fontSize)
               }
               ct addText (new Phrase(text, font)) //causes error on page warning on acroread
             }
@@ -224,40 +222,35 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
 
 private[flashcards] object PdfConstants {
 
-  val selector = new FontSelector()
-  FontFactory registerDirectories()
-  FontFactory.getRegisteredFonts.toArray foreach { fontName =>
-    selector addFont FontFactory.getFont(fontName.toString)
-  }
+  lazy val LeadingMultiplier = 1.25f
 
-  val LeadingMultiplier = 1.25f
+  lazy val TMargin = millimetersToPoints(5.5f)
+  lazy val LRBMargin = millimetersToPoints(5.5f)
 
-  val TMargin = millimetersToPoints(5.5f)
-  val LRBMargin = millimetersToPoints(5.5f)
-
-  val PageRect = new Rectangle(inchesToPoints(5), inchesToPoints(3))
-  val FrontElementsRect = new Rectangle(
+  lazy val PageRect = new Rectangle(inchesToPoints(5), inchesToPoints(3))
+  lazy val FrontElementsRect = new Rectangle(
     LRBMargin,
     LRBMargin * 2,
     PageRect.getWidth - LRBMargin,
     PageRect.getHeight - (TMargin * 2)
   )
-  val BackRect = new Rectangle(LRBMargin, LRBMargin, PageRect.getWidth - LRBMargin, PageRect.getHeight - LRBMargin)
+  lazy val BackRect = new Rectangle(LRBMargin, LRBMargin, PageRect.getWidth - LRBMargin, PageRect.getHeight - LRBMargin)
 
-  val TopLeftWidth = (PageRect.getWidth - (LRBMargin + LRBMargin)) * (2./3.) - (0.5 * millimetersToPoints(5))
-  val TopRightWidth = (PageRect.getWidth - (LRBMargin + LRBMargin)) * (1./3.) - (0.5 * millimetersToPoints(5))
+  lazy val TopLeftWidth = (PageRect.getWidth - (LRBMargin + LRBMargin)) * (2./3.) - (0.5 * millimetersToPoints(5))
+  lazy val TopRightWidth = (PageRect.getWidth - (LRBMargin + LRBMargin)) * (1./3.) - (0.5 * millimetersToPoints(5))
 
-  val MinFontSize = 6
-  val TopFontSize = 10
-  val PageNumFontSize = 10
-  val FrontElementFontSize = 16
-  val BackElementFontSize = 12
+  lazy val MinFontSize = 6
+  lazy val TopFontSize = 10
+  lazy val PageNumFontSize = 10
+  lazy val FrontElementFontSize = 16
+  lazy val BackElementFontSize = 12
 
-  val PlainFontBf = BaseFont createFont ("/freefont/FreeSans.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
-  val MonoFontBf = BaseFont createFont ("/freefont/FreeMono.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
-  val ItalicFontBf = BaseFont createFont ("/freefont/FreeSansOblique.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
-  val BoldFontBf = BaseFont createFont ("/freefont/FreeSansBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
+  lazy val PlainFontBf = BaseFont createFont ("/freefont/FreeSans.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
+  lazy val MonoFontBf = BaseFont createFont ("/freefont/FreeMono.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
+  lazy val ItalicFontBf = BaseFont createFont ("/freefont/FreeSansOblique.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
+  lazy val BoldFontBf = BaseFont createFont ("/freefont/FreeSansBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED)
+  lazy val GreekFontBf = BaseFont createFont ("/greek.ttf", "Cp1253", BaseFont.NOT_EMBEDDED)
 
-  val TopFontBf = BoldFontBf
-  val PageNumFontBf = PlainFontBf
+  lazy val TopFontBf = BoldFontBf
+  lazy val PageNumFontBf = PlainFontBf
 }
