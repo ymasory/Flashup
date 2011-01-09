@@ -34,7 +34,7 @@ object FlashcardParser {
     lazy val Numbering: Parser[String] = "NUMBERS"
 
     //some handy constructed Parsers
-    lazy val endl: Parser[String] = LF
+    lazy val endl: Parser[String] = "\r\n".r | "\r".r | "\n".r
     lazy val blankInlineChar: Parser[String] = """[\f\t ]""".r
     lazy val inlineChar: Parser[String] = """[^\r\n]""".r
     lazy val inlineTicklessChar: Parser[String] = """[^\r\n`]""".r
