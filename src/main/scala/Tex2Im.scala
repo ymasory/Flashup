@@ -2,14 +2,16 @@ package com.yuvimasory.flashcards
 
 import java.io._
 
+import com.itextpdf.text.Image
+
 import StringUtils.LF
 
 class Tex2Im(fontSize: Int, texCode: String) {
 
   val FileName = "temp"
-  val Dvi = ".dvi"
-  val Eps = ".eps"
-  val Tex = ".tex"
+  val DviFileName = FileName + ".dvi"
+  val EpsFileName = FileName + ".eps"
+  val TexFileName = FileName + ".tex"
 
   lazy val texDoc = {
     val builder = new StringBuilder()
@@ -32,15 +34,16 @@ class Tex2Im(fontSize: Int, texCode: String) {
   }
 
 
-  def makeImage() {
-
-    val out = new BufferedWriter(new FileWriter(FileName + Tex))
+  def makeImage(): Image = {
+    val out = new BufferedWriter(new FileWriter(TexFileName))
     out.write(texDoc)
     out.close()
 
-    Runtime.getRuntime.exec(("latex -interaction=batchmode " + FileName + Tex).split(" "))
-    def toEps() = Runtime.getRuntime.exec(("dvips -o " + FileName + Eps + " -E " + FileName + Dvi).split(" "))
+    Runtime.getRuntime.exec(("latex -interaction=batchmode " + TexFileName).split(" "))
+    def toEps() = Runtime.getRuntime.exec(("dvips -o " + EpsFileName + " -E " + DviFileName).split(" "))
     toEps(); toEps();
+
+    Image.getInstance(EpsFileName) //EPS unsupported exception
   }
 }
 
