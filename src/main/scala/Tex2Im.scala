@@ -39,8 +39,9 @@ class Tex2Im(fontSize: Int, texCode: String) {
     out.write(texDoc)
     out.close()
 
-    Runtime.getRuntime.exec(("latex -interaction=batchmode " + TexFileName).split(" "))
-    def toEps() = Runtime.getRuntime.exec(("dvips -o " + EpsFileName + " -E " + DviFileName).split(" "))
+    Runtime.getRuntime.exec(("latex -interaction=batchmode " + TexFileName).split(" ")).waitFor()
+    def toEps() =
+      Runtime.getRuntime.exec(("dvips -o " + EpsFileName + " -E " + DviFileName).split(" ")).waitFor()
     toEps(); toEps();
 
     Image.getInstance(EpsFileName) //EPS unsupported exception
