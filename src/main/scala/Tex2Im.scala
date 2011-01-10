@@ -12,6 +12,7 @@ class Tex2Im(fontSize: Int, texCode: String) {
   val DviFileName = FileName + ".dvi"
   val EpsFileName = FileName + ".eps"
   val TexFileName = FileName + ".tex"
+  val PdfFileName = FileName + ".pdf"
 
   lazy val texDoc = {
     val builder = new StringBuilder()
@@ -34,17 +35,18 @@ class Tex2Im(fontSize: Int, texCode: String) {
   }
 
 
-  def makeImage(): Image = {
+  def makeImage() {
     val out = new BufferedWriter(new FileWriter(TexFileName))
     out.write(texDoc)
     out.close()
-
+    //latex -> dvi
     Runtime.getRuntime.exec(("latex -interaction=batchmode " + TexFileName).split(" ")).waitFor()
     def toEps() =
       Runtime.getRuntime.exec(("dvips -o " + EpsFileName + " -E " + DviFileName).split(" ")).waitFor()
+    //dvi -> eps
     toEps(); toEps();
-
-    Image.getInstance(EpsFileName) //EPS unsupported exception
+    //eps -> pdf
+    Runtime.getRuntime.exec(("epstopdf " + EpsFileName).split(" ")).waitFor()    
   }
 }
 
