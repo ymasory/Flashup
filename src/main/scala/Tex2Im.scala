@@ -1,38 +1,50 @@
 package com.yuvimasory.flashcards
 
-import java.io.File
+import java.io._
 
 import StringUtils.LF
 
-object Tex2Im {
+class Tex2Im(fontSize: Int, texCode: String, headers: List[String]) {
 
-  def createTexDoc(fontSize: Int, texCode: String, headers: List[String]): String = {
+  val FileName = "temp"
+  val Dvi = ".dvi"
+  val Eps = ".eps"
+  val Tex = ".tex"
+
+  lazy val texDoc = {
     val builder = new StringBuilder()
     builder append "\\documentclass[" + fontSize.toString + "pt]{article}"
-    builder append "\\usepackage{color}"
-    builder append "\\usepackage[dvips]{graphicx}"
-    builder append "\\pagestyle{empty}"
+    builder append "\\usepackage{color}" + LF
+    builder append "\\usepackage[dvips]{graphicx}" + LF
+    builder append "\\pagestyle{empty}" + LF
 
     builder append LF
-    headers foreach {builder append _}
+    headers foreach {h => builder append (h + LF)}
     builder append LF
 
-    builder append "\\pagecolor{white}"
-    builder append "\\begin{document}"
-    builder append "{\\color{black}"
-    builder append "\\begin{eqnarray*}"
+    builder append "\\pagecolor{white}" + LF
+    builder append "\\begin{document}" + LF
+    builder append "{\\color{black}" + LF
+    builder append "\\begin{eqnarray*}" + LF
 
     builder append LF
-    builder append texCode
+    builder append texCode + LF
     builder append LF
 
-    builder append "\\end{eqnarray*}}"
-    builder append "\\end{document}"
+    builder append "\\end{eqnarray*}}" + LF
+    builder append "\\end{document}" + LF
 
     builder.toString
   }
 
-  //then run:
-  //latex -interaction=batchmode file.tex
-  //dvips -o file.eps -E image.dvi
+
+  def makeImage {
+
+    val out = new BufferedWriter(new FileWriter(FileName + Tex))
+    out.write(texDoc)
+    out.close()
+
+    Runtime.getRuntime.exec(("latex -interaction=batchmode " + FileName + Tex).split(" "))
+    Runtime.getRuntime.exec(("dvips -o " + FileName + Eps + " -E " + FileName + Dvi).split(" "))
+  }
 }
