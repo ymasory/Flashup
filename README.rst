@@ -11,13 +11,10 @@ GitHub repository <http://github.com/ymasory/Flashup>
 My flashcards <http://yuvimasory.com/flashcards.html>
 
 
-Build
-===== 
+Run
+===
 1. Install sbt <http://code.google.com/p/simple-build-tool/>
-2. ``cd Flashup``
-3. ``sbt`` (start sbt)
-4. ``update``
-5. ``proguard``
-6. ``quit`` (leave sbt)
-7. ``java -jar target/scala_*/flashup-*.min.jar samples/sample.flashup``
-8. open ``sample.pdf`` in your favorite PDF viewer
+1. ``cd Flashup``
+1. ``sbt update``
+1. ``sbt 'run samples/sample.flashup'``
+1. open ``sample.pdf`` in your favorite PDF viewer
