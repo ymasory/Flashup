@@ -14,7 +14,7 @@ My flashcards <http://yuvimasory.com/flashcards.html>
 Run
 ===
 1. Install sbt <http://code.google.com/p/simple-build-tool/>
-1. ``cd Flashup``
-1. ``sbt update``
-1. ``sbt 'run samples/sample.flashup'``
-1. open ``sample.pdf`` in your favorite PDF viewer
+2. ``cd Flashup``
+3. ``sbt update``
+4. ``sbt 'run samples/sample.flashup'``
+5. open ``sample.pdf`` in your favorite PDF viewer
