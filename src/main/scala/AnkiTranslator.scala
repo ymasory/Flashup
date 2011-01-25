@@ -8,6 +8,8 @@ private[flashcards] object AnkiTranslator extends FlashcardTranslator {
 
   val Delimit = "\t"
   val BR = "<br>"
+  val PreOpen = "<pre>"
+  val PreClose = "</pre>"
 
   override def translate(flashDoc: Document, sides: Pages.Value, outFile: File): Unit = {
     require(sides == Pages.All)
@@ -53,15 +55,18 @@ private[flashcards] object AnkiTranslator extends FlashcardTranslator {
         builder append BR //pointless if this is the last
       }
       case CodeBlock(lines) => {
+        builder append PreOpen
         lines foreach {
           case Line(stretch) => {
             stretch.spans foreach {
               case Span(text, _) => {
                 builder append text
               }
+              builder append BR
             }
           }
         }
+        builder append PreClose
       }
     }
 
