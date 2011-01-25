@@ -53,6 +53,7 @@ private[flashcards] object AnkiTranslator extends FlashcardTranslator {
           builder append generateHtmlSpan(span)
         }
         builder append BR //pointless if this is the last
+        builder append BR //pointless if this is the last
       }
       case CodeBlock(lines) => {
         builder append PreOpen
