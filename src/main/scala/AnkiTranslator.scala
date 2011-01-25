@@ -50,7 +50,7 @@ private[flashcards] object AnkiTranslator extends FlashcardTranslator {
         stretch.spans foreach { span =>
           builder append generateHtmlSpan(span)
         }
-        builder append BR
+        builder append BR //pointless if this is the last
       }
       case CodeBlock(lines) => {
         lines foreach {
