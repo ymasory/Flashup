@@ -63,7 +63,7 @@ object CLI {
     builder append ("  -f/--fronts - only generate the fronts of the flashcards (Optional)" + LF)
     builder append ("  -b/--backs - only generate the backs of the flashcards (Optional)" + LF)
     builder append ("  --pdf      - output to PDF format" + LF)
-    builder append ("  --anki     - output to Anki format" + LF)
+    builder append ("  --anki     - output to format importable by Anki and Mnemosyne" + LF)
     builder append ("  --text     - output to text format (ignores -b/f, used for debugging)" + LF)
     builder append LF
     builder append ("Examples:" + LF)
