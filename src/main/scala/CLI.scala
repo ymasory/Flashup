@@ -14,8 +14,8 @@ object CLI {
   val ProgramName = "flashup"
   val FlashcardExtension = "flashup"
 
-  val (backs, fronts, pdf, text, input, output) =
-    ("backs", "fronts", "pdf", "text", "input", "output")
+  val (backs, fronts, pdf, anki, text, input, output) =
+    ("backs", "fronts", "pdf", "anki", "text", "input", "output")
   lazy val jsap = {
     val jsap = new JSAP()
     val backsSwitch = new Switch(backs)
@@ -29,6 +29,9 @@ object CLI {
     val pdfSwitch = new Switch(pdf)
       .setLongFlag(pdf)
     jsap registerParameter pdfSwitch
+    val ankiSwitch = new Switch(anki)
+      .setLongFlag(anki)
+    jsap registerParameter ankiSwitch
     val textSwitch = new Switch(text)
       .setLongFlag(text)
     jsap registerParameter textSwitch
@@ -60,6 +63,7 @@ object CLI {
     builder append ("  -f/--fronts - only generate the fronts of the flashcards (Optional)" + LF)
     builder append ("  -b/--backs - only generate the backs of the flashcards (Optional)" + LF)
     builder append ("  --pdf      - output to PDF format" + LF)
+    builder append ("  --anki     - output to Anki format" + LF)
     builder append ("  --text     - output to text format (ignores -b/f, used for debugging)" + LF)
     builder append LF
     builder append ("Examples:" + LF)
@@ -109,6 +113,8 @@ object CLI {
           outType = OutType.Pdf
         if (config getBoolean(text))
           outType = OutType.Text
+        if (config getBoolean(anki))
+          outType = OutType.Anki
 
         outFile = outFile match {
           case f: File => f
@@ -129,7 +135,7 @@ object CLI {
               }
             }
 
-            val newName = tmp3 + ".pdf"
+            val newName = tmp3 + OutType.extensionMap(outType)
             new File(newName)
           }
         }
@@ -144,8 +150,9 @@ object CLI {
   }
 }
 object OutType extends Enumeration {
-  val Pdf, Text = Value
-  val outputMap = Map(Pdf -> PdfTranslator, Text -> TxtTranslator)
+  val Pdf, Text, Anki = Value
+  val outputMap = Map(Pdf -> PdfTranslator, Text -> TxtTranslator, Anki -> AnkiTranslator)
+  val extensionMap = Map(Pdf -> ".pdf", Text -> ".txt", Anki -> ".txt")
 }
 
 object Pages extends Enumeration {
