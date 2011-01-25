@@ -24,6 +24,7 @@ Run
 Standalone
 ==========
 You can also make a standalone jar if you wish, but I'm told this doesn't work on Mac. Works fine for me on Linux.
+
 1. ``cd Flashup``
 2. ``sbt update``
 3. ``sbt proguard``
