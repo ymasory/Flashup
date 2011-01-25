@@ -32,12 +32,12 @@ private[flashcards] object AnkiTranslator extends FlashcardTranslator {
   def generateFront(front: Front): String = {
     val builder = new StringBuilder
 
-    front.frontEls foreach {
-      case FrontElement(Stretch(spans)) => {
-        spans foreach { span =>
-          builder append generateHtmlSpan(span)
+    for (i <- 0 until front.frontEls.length) {
+      front.frontEls(i) match {
+        case FrontElement(Stretch(spans)) => {
+          spans foreach {builder append generateHtmlSpan(_)}
+          if (i < front.frontEls.length - 1) builder append (BR + BR)
         }
-        builder append BR //pointless if this is the last
       }
     }
 
@@ -47,28 +47,20 @@ private[flashcards] object AnkiTranslator extends FlashcardTranslator {
   def generateBack(back: Back): String = {
     val builder = new StringBuilder
 
-    back.backEls foreach {
-      case Line(stretch) => {
-        stretch.spans foreach { span =>
-          builder append generateHtmlSpan(span)
-        }
-        builder append BR //pointless if this is the last
-        builder append BR //pointless if this is the last
-      }
-      case CodeBlock(lines) => {
-        builder append PreOpen
-        lines foreach {
-          case Line(stretch) => {
-            stretch.spans foreach {
-              case Span(text, _) => {
-                builder append text
-              }
-              builder append BR
-            }
+    for (i <- 0 until back.backEls.length) {
+      back.backEls(i) match {
+        case Line(stretch) =>
+          stretch.spans foreach {builder append generateHtmlSpan(_)}
+        case CodeBlock(lines) => {
+          builder append PreOpen
+          lines foreach {
+            case Line(stretch) =>
+              stretch.spans foreach {case Span(text, _) => builder append text}
           }
+          builder append PreClose
         }
-        builder append PreClose
       }
+      if (i < back.backEls.length - 1) builder append BR
     }
 
     builder toString
