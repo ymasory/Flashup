@@ -10,9 +10,9 @@ class Tex2Im(fontSize: Int, texCode: String) {
 
   val FileName = "temp"
   val DviFileName = FileName + ".dvi"
-  val EpsFileName = FileName + ".eps"
   val TexFileName = FileName + ".tex"
   val PdfFileName = FileName + ".pdf"
+  val PngFileName = FileName + ".png"
 
   lazy val texDoc = {
     val builder = new StringBuilder()
@@ -40,13 +40,9 @@ class Tex2Im(fontSize: Int, texCode: String) {
     out.write(texDoc)
     out.close()
     //latex -> dvi
-    Runtime.getRuntime.exec(("latex -interaction=batchmode " + TexFileName).split(" ")).waitFor()
-    def toEps() =
-      Runtime.getRuntime.exec(("dvips -o " + EpsFileName + " -E " + DviFileName).split(" ")).waitFor()
-    //dvi -> eps
-    toEps(); toEps();
-    //eps -> pdf
-    Runtime.getRuntime.exec(("epstopdf " + EpsFileName).split(" ")).waitFor()    
+    Runtime.getRuntime.exec(("latex -interaction=nonstopmode " + TexFileName).split(" ")).waitFor()
+    //dvi -> png
+    Runtime.getRuntime.exec(("dvipng -D 200 -T tight -o" + PngFileName + " " + DviFileName).split(" ")).waitFor()
   }
 }
 
