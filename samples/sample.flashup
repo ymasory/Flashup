@@ -39,3 +39,9 @@ for(int i = 0; i < 10; i++) {
 }
 `
 
+* You can write LaTeX.
+Check it out:
+
+````\forall n \in \mathbb{N} . n = n````
+
+For that to work in you need latex and dvipng installed.
