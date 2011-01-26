@@ -44,4 +44,4 @@ Check it out:
 
 ````\forall n \in N . n = n````
 
-For that to work in you need latex and dvipng installed.
+For that to work you need latex and dvipng installed on the computer generating the PDFs, or the computer running Anki/Mnemosyne, as the case may be.
