@@ -90,23 +90,27 @@ final case class Stretch(spans: List[Span]) {
 final case class Span(text: String, dec: TextDecoration) {
   override val toString = {
     dec match {
-      case Plain  =>    "[" + text + "]"
-      case Mono   =>   "[[" + text + "]]"
-      case Italic =>  "[[[" + text + "]]]"
-      case Bold   => "[[[[" + text + "]]]]"
+      case Plain  =>     "[" + text + "]"
+      case Mono   =>    "[[" + text + "]]"
+      case Italic =>   "[[[" + text + "]]]"
+      case Bold   =>  "[[[[" + text + "]]]]"
+      case Latex  => "[[[[[" + text + "]]]]]"
     }
   }
 }
 sealed abstract class TextDecoration
 case object Plain extends TextDecoration {
-  override val hashCode = 100;
+  override val hashCode = 100
 }
 case object Mono extends TextDecoration {
-  override val hashCode = 101;
+  override val hashCode = 101
 }
 case object Bold extends TextDecoration {
-  override val hashCode = 102;
+  override val hashCode = 102
 }
 case object Italic extends TextDecoration {
-  override val hashCode = 103;
+  override val hashCode = 103
+}
+case object Latex extends TextDecoration {
+  override val hashCode = 104
 }

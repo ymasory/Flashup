@@ -91,7 +91,7 @@ object FlashcardParser {
       case lstLines => CodeBlock(lstLines)
     }
 
-    lazy val stretch: Parser[Stretch] = ((boldSpan | italicSpan | monoSpan | plainSpan)*) ^^ {
+    lazy val stretch: Parser[Stretch] = ((latexSpan | boldSpan | italicSpan | monoSpan | plainSpan)*) ^^ {
       case lstSpans => Stretch(lstSpans)
     }
 
@@ -111,6 +111,9 @@ object FlashcardParser {
       case chars => Span(chars.mkString, Bold)
     }
 
+    lazy val latexSpan: Parser[Span] = repN(4, Tick) ~> (inlineTicklessChar+) <~ repN(4, Tick) ^^ {
+      case chars => Span(chars.mkString, Latex)
+    }
 
 
 
