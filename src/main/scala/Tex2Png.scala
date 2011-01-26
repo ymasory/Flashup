@@ -6,7 +6,7 @@ import com.itextpdf.text.Image
 
 import StringUtils.LF
 
-class Tex2Im(fontSize: Int, texCode: String) {
+class Tex2Png(fontSize: Int, texCode: String) {
 
   val FileName = "temp"
   val DviFileName = FileName + ".dvi"
@@ -35,21 +35,30 @@ class Tex2Im(fontSize: Int, texCode: String) {
   }
 
 
-  def makeImage() {
-    val out = new BufferedWriter(new FileWriter(TexFileName))
-    out.write(texDoc)
-    out.close()
-    //latex -> dvi
-    Runtime.getRuntime.exec(("latex -interaction=nonstopmode " + TexFileName).split(" ")).waitFor()
-    //dvi -> png
-    Runtime.getRuntime.exec(("dvipng -D 200 -T tight -o" + PngFileName + " " + DviFileName).split(" ")).waitFor()
+  private def makePng(): Option[Image] = {
+    try {
+      val out = new BufferedWriter(new FileWriter(TexFileName))
+      out.write(texDoc)
+      out.close()
+      //latex -> dvi
+      Runtime.getRuntime.exec(("latex -interaction=nonstopmode " + TexFileName).split(" ")).waitFor()
+      //dvi -> png
+      Runtime.getRuntime.exec(("dvipng -D 200 -T tight -o" + PngFileName + " " + DviFileName).split(" ")).waitFor()
+
+      Some(Image.getInstance(PngFileName))
+    }
+    catch {
+      case e => None
+    }
   }
+
+  
 }
 
-object Tex2Im {
+object Tex2Png {
 
   def main(args: Array[String]) {
-    val maker = new Tex2Im(12, """x \in X \forall z \in \mathbb{N}""")
-    maker.makeImage()
+    val maker = new Tex2Png(12, """x \in X \forall z \in \mathbb{N}""")
+    maker.makePng()
   }
 }
