@@ -70,10 +70,11 @@ private[flashcards] object AnkiTranslator extends FlashcardTranslator {
     span match {
       case Span(text, dec) => {
         dec match {
-          case Plain => text
-          case Mono => "<tt>" + text + "</tt>"
+          case Plain  => text
+          case Mono   => "<tt>" + text + "</tt>"
           case Italic => "<em>" + text + "</em>"
-          case Bold => "<strong>" + text + "</strong>"
+          case Bold   => "<strong>" + text + "</strong>"
+          case Latex  => "[latex]" + text + "[/latex]"
         }
       }
     }
