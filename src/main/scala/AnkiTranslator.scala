@@ -74,7 +74,7 @@ private[flashcards] object AnkiTranslator extends FlashcardTranslator {
           case Mono   => "<tt>" + text + "</tt>"
           case Italic => "<em>" + text + "</em>"
           case Bold   => "<strong>" + text + "</strong>"
-          case Latex  => "[latex]" + text + "[/latex]"
+          case Latex  => "[latex]$" + text + "$[/latex]"
         }
       }
     }
