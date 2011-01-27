@@ -53,7 +53,10 @@ private[flashcards] abstract class ProgramTranslator extends FlashcardTranslator
           stretch.spans foreach {builder append generateHtmlSpan(_)}
         case CodeBlock(lines) => {
           builder append PreOpen
-          builder append (lines.foldLeft("")(_ + _.extractText + BR))
+          for (j <- 0 until lines.length) {
+            builder append lines(j).extractText
+            if (j < lines.length - 1) builder append BR
+          }
           builder append PreClose
         }
         case LatexBlock(lines) => builder append handleLatex(lines.foldLeft("")(_ + _.extractText), true)
