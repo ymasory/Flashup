@@ -164,7 +164,12 @@ object OutType extends Enumeration {
     Anki -> AnkiTranslator,
     Mnemo -> MnemosyneTranslator
   )
-  val extensionMap = Map(Pdf -> ".pdf", Text -> ".txt", Anki -> "-anki.txt", Mnemo -> "-mnemosyne.txt")
+  val extensionMap = Map(
+    Pdf -> ".pdf",
+    Text -> ".debug",
+    Anki -> "-anki.txt",
+    Mnemo -> "-mnemosyne.txt"
+  )
 }
 
 object Pages extends Enumeration {
