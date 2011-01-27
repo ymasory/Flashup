@@ -69,6 +69,7 @@ object CLI {
     builder append ("  --anki      - output to format importable by Anki" + LF)
     builder append ("  --mnemo     - output to format importable by Mnemosyne" + LF)
     builder append ("  --text      - output to debugging format)" + LF)
+    builder append ("Only pdf mode respects the front/back flags.")
     builder append LF
     builder append ("Examples:" + LF)
     builder append ("  java -jar " + ProgramName + ".jar --pdf path/to/input." + FlashcardExtension)
