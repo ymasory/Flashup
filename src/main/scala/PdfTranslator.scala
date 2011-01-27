@@ -66,10 +66,11 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
           spans foreach {
             case Span(text, dec) => {
               val font = dec match {
-                case Plain => new Font(PlainFontBf, fontSize)
-                case Mono => new Font(MonoFontBf, fontSize)
+                case Plain  => new Font(PlainFontBf, fontSize)
+                case Mono   => new Font(MonoFontBf, fontSize)
                 case Italic => new Font(ItalicFontBf, fontSize)
-                case Bold => new Font(BoldFontBf, fontSize)
+                case Bold   => new Font(BoldFontBf, fontSize)
+                case Latex  => new Font(PlainFontBf, fontSize)
               }
               ct addText (new Phrase(text, font)) //causes error on page warning on acroread
             }
@@ -131,15 +132,19 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
           stretch.spans foreach {
             case Span(text, dec) => {
               val font = dec match {
-                case Plain => new Font(PlainFontBf, fontSize)
-                case Mono => new Font(MonoFontBf, fontSize)
+                case Plain  => new Font(PlainFontBf, fontSize)
+                case Mono   => new Font(MonoFontBf, fontSize)
                 case Italic => new Font(ItalicFontBf, fontSize)
-                case Bold => new Font(BoldFontBf, fontSize)
+                case Bold   => new Font(BoldFontBf, fontSize)
+                case Latex  => new Font(PlainFontBf, fontSize)
               }
               ct addText (new Phrase(text, font)) //causes error on page warning on acroread
             }
           }
           ct addText(new Phrase(LF, new Font(PlainFontBf, fontSize))) //causes error on page warning on acroread
+        }
+        case LatexBlock(lines) => {
+          ct addText (new Phrase(lines.foldLeft("")(_ + _.extractText) + LF, new Font(MonoFontBf, fontSize)))
         }
         case CodeBlock(lines) => {
           lines foreach {
