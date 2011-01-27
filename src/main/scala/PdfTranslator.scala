@@ -70,7 +70,7 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
                 case Mono   => new Font(MonoFontBf, fontSize)
                 case Italic => new Font(ItalicFontBf, fontSize)
                 case Bold   => new Font(BoldFontBf, fontSize)
-                case Latex  => new Font(PlainFontBf, fontSize)
+                case Latex  => new Font(MonoFontBf, fontSize)
               }
               ct addText (new Phrase(text, font)) //causes error on page warning on acroread
             }
@@ -136,7 +136,7 @@ private[flashcards] object PdfTranslator extends FlashcardTranslator {
                 case Mono   => new Font(MonoFontBf, fontSize)
                 case Italic => new Font(ItalicFontBf, fontSize)
                 case Bold   => new Font(BoldFontBf, fontSize)
-                case Latex  => new Font(PlainFontBf, fontSize)
+                case Latex  => new Font(MonoFontBf, fontSize)
               }
               ct addText (new Phrase(text, font)) //causes error on page warning on acroread
             }
