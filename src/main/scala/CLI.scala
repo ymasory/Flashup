@@ -14,8 +14,8 @@ object CLI {
   val ProgramName = "flashup"
   val FlashcardExtension = "flashup"
 
-  val (backs, fronts, pdf, anki, mnemo, text, input, output) =
-    ("backs", "fronts", "pdf", "anki", "mnemo", "debug", "input", "output")
+  val (backs, fronts, pdf, anki, mnemo, debug, input, output, all) =
+    ("backs", "fronts", "pdf", "anki", "mnemo", "debug", "input", "output", "all")
   lazy val jsap = {
     val jsap = new JSAP()
     val backsSwitch = new Switch(backs)
@@ -35,9 +35,12 @@ object CLI {
     val mnemoSwitch = new Switch(mnemo)
       .setLongFlag(mnemo)
     jsap registerParameter mnemoSwitch
-    val textSwitch = new Switch(text)
-      .setLongFlag(text)
-    jsap registerParameter textSwitch
+    val debugSwitch = new Switch(debug)
+      .setLongFlag(debug)
+    jsap registerParameter debugSwitch
+    val allSwitch = new Switch(all)
+      .setLongFlag(all)
+    jsap registerParameter allSwitch
     val inputOption = new UnflaggedOption(input)
       .setStringParser(FileStringParser.getParser().setMustBeFile(true).setMustExist(true))
       .setRequired(true)
@@ -68,7 +71,8 @@ object CLI {
     builder append ("  --pdf       - output to PDF format" + LF)
     builder append ("  --anki      - output to format importable by Anki" + LF)
     builder append ("  --mnemo     - output to format importable by Mnemosyne" + LF)
-    builder append ("  --text      - output to debugging format)" + LF)
+    builder append ("  --debug     - output to debugging format" + LF)
+    builder append ("  --all       - generate all formats except debugging" + LF)
     builder append ("Only pdf mode respects the front/back flags.")
     builder append LF
     builder append ("Examples:" + LF)
@@ -79,94 +83,119 @@ object CLI {
   }
 
   def main(args: Array[String]) {
+
     parseArgs(args) match {
-      case Some((outType, pages, inFile, outFile)) => {
-        val res = FlashcardParser.parseDoc(inFile)
-        res match {
-          case Some(doc) => {
-            try {
-              val translator = OutType.outputMap(outType)
-              translator.translate(doc, pages, outFile)
+      case Nil => exit(1)
+      case reqs => {
+        reqs.map {
+          case Request(outType, pages, inFile, outFile) => {
+            val res = FlashcardParser.parseDoc(inFile)
+            res match {
+              case Some(doc) => {
+                try {
+                  val translator = OutType.outputMap(outType)
+                  translator.translate(doc, pages, outFile)
+                }
+                catch {
+                  case e: Exception => e.printStackTrace()
+                }
+              }
+              case None => {
+                Console.err println ("Could not parse: " + inFile.getAbsolutePath)
+                exit(1)
+              }
             }
-            catch {
-              case e: Exception => e.printStackTrace()
-            }
-          }
-          case None => {
-            Console.err println ("Could not parse: " + inFile.getAbsolutePath)
-            exit(1)
           }
         }
       }
-      case None => exit(1)
     }
   }
 
-  private[flashcards] def parseArgs(args: Array[String]): Option[(OutType.Value, Pages.Value, File, File)] = {
-    val config = jsap.parse(args)
-    config.success match {
-      case true => {
-        var sides: Pages.Value = Pages.All
-        var outType: OutType.Value = OutType.Pdf
-        var outFile = config.getFile(output)
-        val inFile = config.getFile(input)
-        if (config getBoolean(backs))
-          sides = Pages.Backs
-        if (config getBoolean(fronts))
-          sides = Pages.Fronts
-        if (config getBoolean(pdf))
-          outType = OutType.Pdf
-        if (config getBoolean(text))
-          outType = OutType.Text
-        if (config getBoolean(anki))
-          outType = OutType.Anki
-        if (config getBoolean(mnemo))
-          outType = OutType.Mnemo
-
-        outFile = outFile match {
-          case f: File => f
-          case _ => {
-            val par = inFile.getParentFile
-            val tmp1 = inFile.getName
-            val tmp2 = {
-              tmp1.split("""\.""") match {
-                case a @ Array(_, _*) => a.head.mkString
-                case _ => tmp1
-              }
-            }
-            val tmp3 = tmp2 + {
-              sides match {
-                case Pages.Fronts => "-fronts"
-                case Pages.Backs => "-backs"
-                case Pages.All => ""
-              }
-            }
-
-            val newName = tmp3 + OutType.extensionMap(outType)
-            new File(newName)
+  private def makeRequest(inFile: File, naiveOutFile: File, sides: Pages.Value, outType: OutType.Value): Request = {
+    val outFile = naiveOutFile match {
+      case f: File => f
+      case _ => {
+        val par = inFile.getParentFile
+        val tmp1 = inFile.getName
+        val tmp2 = {
+          tmp1.split("""\.""") match {
+            case a @ Array(_, _*) => a.head.mkString
+            case _ => tmp1
+          }
+        }
+        val tmp3 = tmp2 + {
+          sides match {
+            case Pages.Fronts => "-fronts"
+            case Pages.Backs => "-backs"
+            case Pages.All => ""
           }
         }
 
-        Some(outType, sides, inFile, outFile)
+        val newName = tmp3 + OutType.extensionMap(outType)
+        new File(newName)
+      }
+    }
+
+    Request(outType, sides, inFile, outFile)
+  }
+
+  private[flashcards] def parseArgs(args: Array[String]): List[Request] = {
+    val config = jsap.parse(args)
+    config.success match {
+      case true => {
+        val naiveOutFile = config.getFile(output)
+        val inFile = config.getFile(input)
+
+        //there has got to be a way to eliminate this tedious duplication
+        if (config getBoolean(all)) {
+          List (
+            makeRequest(inFile, naiveOutFile, Pages.Backs, OutType.Pdf),
+            makeRequest(inFile, naiveOutFile, Pages.Fronts, OutType.Pdf),
+            makeRequest(inFile, naiveOutFile, Pages.All, OutType.Pdf),
+            makeRequest(inFile, naiveOutFile, Pages.All, OutType.Anki),
+            makeRequest(inFile, naiveOutFile, Pages.All, OutType.Mnemo)
+          )
+        }
+        else if (config getBoolean(pdf)) {
+          if (config getBoolean(backs))
+            List(makeRequest(inFile, naiveOutFile, Pages.Backs, OutType.Pdf))
+          else if (config getBoolean(fronts))
+            List(makeRequest(inFile, naiveOutFile, Pages.Fronts, OutType.Pdf))
+          else
+            List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Pdf))
+        }
+        else if (config getBoolean(debug))
+          List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Debug))
+        else if (config getBoolean(anki))
+          List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Anki))
+        else if (config getBoolean(mnemo))
+          List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Mnemo))
+        else {
+          Console.err println "unexpected CLI case"
+          Nil
+        }
       }
       case false => {
         Console.err println usage(config)
-        None
+        Nil
       }
     }
   }
 }
+
+case class Request(outType: OutType.Value, sides: Pages.Value, inFile: File, outFile: File)
+
 object OutType extends Enumeration {
-  val Pdf, Text, Anki, Mnemo = Value
+  val Pdf, Debug, Anki, Mnemo, All = Value
   val outputMap = Map(
     Pdf -> PdfTranslator,
-    Text -> TxtTranslator,
+    Debug -> TxtTranslator,
     Anki -> AnkiTranslator,
     Mnemo -> MnemosyneTranslator
   )
   val extensionMap = Map(
     Pdf -> ".pdf",
-    Text -> ".debug",
+    Debug -> ".debug",
     Anki -> "-anki.txt",
     Mnemo -> "-mnemosyne.txt"
   )
