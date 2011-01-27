@@ -4,7 +4,7 @@ import java.io.{File, PrintWriter}
 
 import StringUtils.LF
 
-private[flashcards] object AnkiTranslator extends FlashcardTranslator {
+private[flashcards] abstract class ProgramTranslator extends FlashcardTranslator {
 
   val Delimit = "\t"
   val BR = "<br>"
@@ -74,10 +74,18 @@ private[flashcards] object AnkiTranslator extends FlashcardTranslator {
           case Mono   => "<tt>" + text + "</tt>"
           case Italic => "<em>" + text + "</em>"
           case Bold   => "<strong>" + text + "</strong>"
-          case Latex  => "[latex]" + text + "[/latex]"
+          case Latex  => handleLatex(text)
         }
       }
     }
   }
 
+  def handleLatex(text: String): String
+}
+
+private[flashcards] object AnkiTranslator extends ProgramTranslator() {
+  override def handleLatex(text: String) = "[latex]" + text + "[/latex]"
+}
+private[flashcards] object MnemosyneTranslator extends ProgramTranslator() {
+  override def handleLatex(text: String) = "<$>" + text + "</$>"
 }

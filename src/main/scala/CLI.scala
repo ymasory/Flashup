@@ -14,8 +14,8 @@ object CLI {
   val ProgramName = "flashup"
   val FlashcardExtension = "flashup"
 
-  val (backs, fronts, pdf, anki, text, input, output) =
-    ("backs", "fronts", "pdf", "anki", "text", "input", "output")
+  val (backs, fronts, pdf, anki, mnemo, text, input, output) =
+    ("backs", "fronts", "pdf", "anki", "mnemo", "text", "input", "output")
   lazy val jsap = {
     val jsap = new JSAP()
     val backsSwitch = new Switch(backs)
@@ -32,6 +32,9 @@ object CLI {
     val ankiSwitch = new Switch(anki)
       .setLongFlag(anki)
     jsap registerParameter ankiSwitch
+    val mnemoSwitch = new Switch(mnemo)
+      .setLongFlag(mnemo)
+    jsap registerParameter mnemoSwitch
     val textSwitch = new Switch(text)
       .setLongFlag(text)
     jsap registerParameter textSwitch
@@ -61,10 +64,11 @@ object CLI {
     builder append LF
     builder append ("Options:" + LF)
     builder append ("  -f/--fronts - only generate the fronts of the flashcards (Optional)" + LF)
-    builder append ("  -b/--backs - only generate the backs of the flashcards (Optional)" + LF)
-    builder append ("  --pdf      - output to PDF format" + LF)
-    builder append ("  --anki     - output to format importable by Anki and Mnemosyne" + LF)
-    builder append ("  --text     - output to text format (ignores -b/f, used for debugging)" + LF)
+    builder append ("  -b/--backs  - only generate the backs of the flashcards (Optional)" + LF)
+    builder append ("  --pdf       - output to PDF format" + LF)
+    builder append ("  --anki      - output to format importable by Anki" + LF)
+    builder append ("  --mnemo     - output to format importable by Mnemosyne" + LF)
+    builder append ("  --text      - output to text format (ignores -b/f, used for debugging)" + LF)
     builder append LF
     builder append ("Examples:" + LF)
     builder append ("  java -jar " + ProgramName + ".jar --pdf path/to/input." + FlashcardExtension)
@@ -115,6 +119,8 @@ object CLI {
           outType = OutType.Text
         if (config getBoolean(anki))
           outType = OutType.Anki
+        if (config getBoolean(mnemo))
+          outType = OutType.Mnemo
 
         outFile = outFile match {
           case f: File => f
@@ -150,9 +156,14 @@ object CLI {
   }
 }
 object OutType extends Enumeration {
-  val Pdf, Text, Anki = Value
-  val outputMap = Map(Pdf -> PdfTranslator, Text -> TxtTranslator, Anki -> AnkiTranslator)
-  val extensionMap = Map(Pdf -> ".pdf", Text -> ".txt", Anki -> ".txt")
+  val Pdf, Text, Anki, Mnemo = Value
+  val outputMap = Map(
+    Pdf -> PdfTranslator,
+    Text -> TxtTranslator,
+    Anki -> AnkiTranslator,
+    Mnemo -> MnemosyneTranslator
+  )
+  val extensionMap = Map(Pdf -> ".pdf", Text -> ".txt", Anki -> "-anki.txt", Mnemo -> "-mnemosyne.txt")
 }
 
 object Pages extends Enumeration {
