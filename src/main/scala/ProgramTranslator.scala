@@ -61,7 +61,11 @@ private[flashcards] abstract class ProgramTranslator extends FlashcardTranslator
         }
         case LatexBlock(lines) => builder append handleLatex(lines.foldLeft("")(_ + _.extractText), true)
       }
-      if (i < back.backEls.length - 1) builder append BR
+      back.backEls(i) match {
+        case Line(_)  =>  if (i < back.backEls.length - 1) builder append BR
+        case CodeBlock(_) | LatexBlock(_) => //do nothing, newline is automatic
+
+      }
     }
 
     builder toString
@@ -85,7 +89,8 @@ private[flashcards] abstract class ProgramTranslator extends FlashcardTranslator
 }
 
 private[flashcards] object AnkiTranslator extends ProgramTranslator() {
-  override def handleLatex(text: String, isBlock: Boolean) = "[latex]" + text + "[/latex]"
+  override def handleLatex(text: String, isBlock: Boolean) =
+    "[latex]" + text + "[/latex]" + (if (isBlock) BR else "")
 }
 private[flashcards] object MnemosyneTranslator extends ProgramTranslator() {
   override def handleLatex(text: String, isBlock: Boolean) = 
