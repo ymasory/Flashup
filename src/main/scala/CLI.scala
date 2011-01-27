@@ -86,12 +86,13 @@ object CLI {
 
     parseArgs(args) match {
       case Nil => exit(1)
-      case reqs => {
-        reqs.map {
-          case Request(outType, pages, inFile, outFile) => {
-            val res = FlashcardParser.parseDoc(inFile)
-            res match {
-              case Some(doc) => {
+      case reqs @ h :: _ => {
+        val inFile = h.inFile
+        val res = FlashcardParser.parseDoc(inFile) //optimization assumes all Requests are on same inFile
+        res match {
+          case Some(doc) => {
+            reqs.map {
+              case Request(outType, pages, inFile, outFile) => {
                 try {
                   val translator = OutType.outputMap(outType)
                   translator.translate(doc, pages, outFile)
@@ -100,11 +101,11 @@ object CLI {
                   case e: Exception => e.printStackTrace()
                 }
               }
-              case None => {
-                Console.err println ("Could not parse: " + inFile.getAbsolutePath)
-                exit(1)
-              }
             }
+          }
+          case None => {
+            Console.err println ("Could not parse: " + inFile.getAbsolutePath)
+            exit(1)
           }
         }
       }
