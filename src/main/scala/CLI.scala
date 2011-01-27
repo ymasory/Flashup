@@ -14,10 +14,13 @@ object CLI {
   val ProgramName = "flashup"
   val FlashcardExtension = "flashup"
 
-  val (backs, fronts, pdf, anki, mnemo, debug, input, all) =
-    ("backs", "fronts", "pdf", "anki", "mnemo", "debug", "input", "all")
+  val (backs, fronts, pdf, anki, mnemo, debug, input, all, sib) =
+    ("backs", "fronts", "pdf", "anki", "mnemo", "debug", "input", "all", "siblings")
   lazy val jsap = {
     val jsap = new JSAP()
+    val siblingSwitch = new Switch(sib)
+      .setShortFlag('s')
+    jsap registerParameter siblingSwitch
     val backsSwitch = new Switch(backs)
       .setShortFlag('b')
       .setLongFlag(backs)
@@ -62,8 +65,9 @@ object CLI {
     builder append (jsap.getUsage + LF)
     builder append LF
     builder append ("Options:" + LF)
-    builder append ("  -f/--fronts - only generate the fronts of the flashcards (Optional)" + LF)
-    builder append ("  -b/--backs  - only generate the backs of the flashcards (Optional)" + LF)
+    builder append ("  -s          - instead of placing output files in current directory (default), make them siblings of input files" + LF)
+    builder append ("  -f/--fronts - only generate the fronts of the flashcards (optional)" + LF)
+    builder append ("  -b/--backs  - only generate the backs of the flashcards (optional)" + LF)
     builder append ("  --pdf       - output to PDF format" + LF)
     builder append ("  --anki      - output to format importable by Anki" + LF)
     builder append ("  --mnemo     - output to format importable by Mnemosyne" + LF)
@@ -113,7 +117,7 @@ object CLI {
     }
   }
 
-  private def makeRequest(inFile: File, naiveOutFile: File, sides: Pages.Value, outType: OutType.Value): Request = {
+  private def makeRequest(inFile: File, naiveOutFile: File, sibling: Boolean, sides: Pages.Value, outType: OutType.Value): Request = {
     val outFile = naiveOutFile match {
       case f: File => f
       case _ => {
@@ -134,7 +138,7 @@ object CLI {
         }
 
         val newName = tmp3 + OutType.extensionMap(outType)
-        new File(newName)
+        new File(if (sibling) inFile.getParentFile  else new File("."), newName)
       }
     }
 
@@ -153,29 +157,31 @@ object CLI {
           case inFile => {
 
             //there has got to be a way to eliminate this tedious duplication
+            val sibling = config getBoolean sib
+
             if (config getBoolean(all)) {
               List (
-                makeRequest(inFile, naiveOutFile, Pages.Backs, OutType.Pdf),
-                makeRequest(inFile, naiveOutFile, Pages.Fronts, OutType.Pdf),
-                makeRequest(inFile, naiveOutFile, Pages.All, OutType.Pdf),
-                makeRequest(inFile, naiveOutFile, Pages.All, OutType.Anki),
-                makeRequest(inFile, naiveOutFile, Pages.All, OutType.Mnemo)
+                makeRequest(inFile, naiveOutFile, sibling, Pages.Backs, OutType.Pdf),
+                makeRequest(inFile, naiveOutFile, sibling, Pages.Fronts, OutType.Pdf),
+                makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Pdf),
+                makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Anki),
+                makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Mnemo)
               )
             }
             else if (config getBoolean(pdf)) {
               if (config getBoolean(backs))
-                List(makeRequest(inFile, naiveOutFile, Pages.Backs, OutType.Pdf))
+                List(makeRequest(inFile, naiveOutFile, sibling, Pages.Backs, OutType.Pdf))
               else if (config getBoolean(fronts))
-                List(makeRequest(inFile, naiveOutFile, Pages.Fronts, OutType.Pdf))
+                List(makeRequest(inFile, naiveOutFile, sibling, Pages.Fronts, OutType.Pdf))
               else
-                List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Pdf))
+                List(makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Pdf))
             }
             else if (config getBoolean(debug))
-              List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Debug))
+              List(makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Debug))
             else if (config getBoolean(anki))
-              List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Anki))
+              List(makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Anki))
             else if (config getBoolean(mnemo))
-              List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Mnemo))
+              List(makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Mnemo))
             else {
               Console.err println "unexpected CLI case"
               Nil
