@@ -14,8 +14,8 @@ object CLI {
   val ProgramName = "flashup"
   val FlashcardExtension = "flashup"
 
-  val (backs, fronts, pdf, anki, mnemo, debug, input, output, all) =
-    ("backs", "fronts", "pdf", "anki", "mnemo", "debug", "input", "output", "all")
+  val (backs, fronts, pdf, anki, mnemo, debug, input, all) =
+    ("backs", "fronts", "pdf", "anki", "mnemo", "debug", "input", "all")
   lazy val jsap = {
     val jsap = new JSAP()
     val backsSwitch = new Switch(backs)
@@ -43,12 +43,8 @@ object CLI {
     jsap registerParameter allSwitch
     val inputOption = new UnflaggedOption(input)
       .setStringParser(FileStringParser.getParser().setMustBeFile(true).setMustExist(true))
-      .setRequired(true)
+      .setRequired(true).setGreedy(true)
     jsap registerParameter inputOption
-    val outputOption = new UnflaggedOption(output)
-      .setStringParser(FileStringParser.getParser().setMustBeFile(true).setMustExist(false))
-      .setRequired(false)
-    jsap registerParameter outputOption
       
     jsap
   }
@@ -86,26 +82,31 @@ object CLI {
 
     parseArgs(args) match {
       case Nil => exit(1)
-      case reqs @ h :: _ => {
-        val inFile = h.inFile
-        val res = FlashcardParser.parseDoc(inFile) //optimization assumes all Requests are on same inFile
-        res match {
-          case Some(doc) => {
-            reqs.map {
-              case Request(outType, pages, inFile, outFile) => {
-                try {
-                  val translator = OutType.outputMap(outType)
-                  translator.translate(doc, pages, outFile)
-                }
-                catch {
-                  case e: Exception => e.printStackTrace()
+      case fileReqs if (fileReqs.contains(Nil)) => exit(1)
+      case fileReqs => {
+        fileReqs.map {
+          case reqs => {
+            val inFile = reqs(0).inFile
+            val res = FlashcardParser.parseDoc(inFile)
+            res match {
+              case Some(doc) => {
+                reqs.map {
+                  case Request(outType, pages, inFile, outFile) => {
+                    try {
+                      val translator = OutType.outputMap(outType)
+                      translator.translate(doc, pages, outFile)
+                    }
+                    catch {
+                      case e: Exception => e.printStackTrace()
+                    }
+                  }
                 }
               }
+              case None => {
+                Console.err println ("Could not parse: " + inFile.getAbsolutePath)
+                exit(1)
+              }
             }
-          }
-          case None => {
-            Console.err println ("Could not parse: " + inFile.getAbsolutePath)
-            exit(1)
           }
         }
       }
@@ -140,40 +141,46 @@ object CLI {
     Request(outType, sides, inFile, outFile)
   }
 
-  private[flashcards] def parseArgs(args: Array[String]): List[Request] = {
+  private[flashcards] def parseArgs(args: Array[String]): List[List[Request]] = {
     val config = jsap.parse(args)
     config.success match {
       case true => {
-        val naiveOutFile = config.getFile(output)
-        val inFile = config.getFile(input)
+        val naiveOutFile = null
+        val inFiles = config.getFileArray(input)
 
-        //there has got to be a way to eliminate this tedious duplication
-        if (config getBoolean(all)) {
-          List (
-            makeRequest(inFile, naiveOutFile, Pages.Backs, OutType.Pdf),
-            makeRequest(inFile, naiveOutFile, Pages.Fronts, OutType.Pdf),
-            makeRequest(inFile, naiveOutFile, Pages.All, OutType.Pdf),
-            makeRequest(inFile, naiveOutFile, Pages.All, OutType.Anki),
-            makeRequest(inFile, naiveOutFile, Pages.All, OutType.Mnemo)
-          )
-        }
-        else if (config getBoolean(pdf)) {
-          if (config getBoolean(backs))
-            List(makeRequest(inFile, naiveOutFile, Pages.Backs, OutType.Pdf))
-          else if (config getBoolean(fronts))
-            List(makeRequest(inFile, naiveOutFile, Pages.Fronts, OutType.Pdf))
-          else
-            List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Pdf))
-        }
-        else if (config getBoolean(debug))
-          List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Debug))
-        else if (config getBoolean(anki))
-          List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Anki))
-        else if (config getBoolean(mnemo))
-          List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Mnemo))
-        else {
-          Console.err println "unexpected CLI case"
-          Nil
+        List.empty ++ inFiles.map {
+
+          case inFile => {
+
+            //there has got to be a way to eliminate this tedious duplication
+            if (config getBoolean(all)) {
+              List (
+                makeRequest(inFile, naiveOutFile, Pages.Backs, OutType.Pdf),
+                makeRequest(inFile, naiveOutFile, Pages.Fronts, OutType.Pdf),
+                makeRequest(inFile, naiveOutFile, Pages.All, OutType.Pdf),
+                makeRequest(inFile, naiveOutFile, Pages.All, OutType.Anki),
+                makeRequest(inFile, naiveOutFile, Pages.All, OutType.Mnemo)
+              )
+            }
+            else if (config getBoolean(pdf)) {
+              if (config getBoolean(backs))
+                List(makeRequest(inFile, naiveOutFile, Pages.Backs, OutType.Pdf))
+              else if (config getBoolean(fronts))
+                List(makeRequest(inFile, naiveOutFile, Pages.Fronts, OutType.Pdf))
+              else
+                List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Pdf))
+            }
+            else if (config getBoolean(debug))
+              List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Debug))
+            else if (config getBoolean(anki))
+              List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Anki))
+            else if (config getBoolean(mnemo))
+              List(makeRequest(inFile, naiveOutFile, Pages.All, OutType.Mnemo))
+            else {
+              Console.err println "unexpected CLI case"
+              Nil
+            }
+          }
         }
       }
       case false => {
