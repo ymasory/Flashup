@@ -15,7 +15,7 @@ object CLI {
   val FlashcardExtension = "flashup"
 
   val (backs, fronts, pdf, anki, mnemo, text, input, output) =
-    ("backs", "fronts", "pdf", "anki", "mnemo", "text", "input", "output")
+    ("backs", "fronts", "pdf", "anki", "mnemo", "debug", "input", "output")
   lazy val jsap = {
     val jsap = new JSAP()
     val backsSwitch = new Switch(backs)
@@ -68,7 +68,7 @@ object CLI {
     builder append ("  --pdf       - output to PDF format" + LF)
     builder append ("  --anki      - output to format importable by Anki" + LF)
     builder append ("  --mnemo     - output to format importable by Mnemosyne" + LF)
-    builder append ("  --text      - output to text format (ignores -b/f, used for debugging)" + LF)
+    builder append ("  --text      - output to debugging format)" + LF)
     builder append LF
     builder append ("Examples:" + LF)
     builder append ("  java -jar " + ProgramName + ".jar --pdf path/to/input." + FlashcardExtension)
