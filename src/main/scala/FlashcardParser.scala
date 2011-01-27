@@ -85,10 +85,14 @@ object FlashcardParser {
       case fEls => Front(fEls)
     }
 
-    lazy val backElement: Parser[BackElement] = codeBlock | line
+    lazy val backElement: Parser[BackElement] = latexBlock | codeBlock | line
 
     lazy val codeBlock: Parser[CodeBlock] = Tick ~> endl ~> (ticklessLine*) <~ Tick <~ endl ^^ {
       case lstLines => CodeBlock(lstLines)
+    }
+
+    lazy val latexBlock: Parser[LatexBlock] = repN(4, Tick) ~> endl ~> (ticklessLine*) <~ repN(4, Tick) <~ endl ^^ {
+      case lstLines => LatexBlock(lstLines)
     }
 
     lazy val stretch: Parser[Stretch] = ((latexSpan | boldSpan | italicSpan | monoSpan | plainSpan)*) ^^ {

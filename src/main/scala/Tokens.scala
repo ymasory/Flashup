@@ -78,6 +78,9 @@ sealed abstract class BackElement
 case class CodeBlock(lines: List[Line]) extends BackElement() {
   override val toString = "{{\n" + lines.mkString + "}}\n"
 }
+case class LatexBlock(lines: List[Line]) extends BackElement() {
+  override val toString = "{{{{\n" + lines.mkString + "}}}}\n"
+}
 case class Line(stretch: Stretch) extends BackElement() {
   override val toString = stretch.toString + LF
   def isEmpty: Boolean = stretch.spans.length == 0

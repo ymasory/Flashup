@@ -59,6 +59,7 @@ private[flashcards] abstract class ProgramTranslator extends FlashcardTranslator
           }
           builder append PreClose
         }
+        case LatexBlock(lines) => builder append handleLatex(lines mkString, true)
       }
       if (i < back.backEls.length - 1) builder append BR
     }
@@ -74,18 +75,20 @@ private[flashcards] abstract class ProgramTranslator extends FlashcardTranslator
           case Mono   => "<tt>" + text + "</tt>"
           case Italic => "<em>" + text + "</em>"
           case Bold   => "<strong>" + text + "</strong>"
-          case Latex  => handleLatex(text)
+          case Latex  => handleLatex(text, false)
         }
       }
     }
   }
 
-  def handleLatex(text: String): String
+  def handleLatex(text: String, isBlock: Boolean): String
 }
 
 private[flashcards] object AnkiTranslator extends ProgramTranslator() {
-  override def handleLatex(text: String) = "[latex]" + text + "[/latex]"
+  override def handleLatex(text: String, isBlock: Boolean) = "[latex]" + text + "[/latex]"
 }
 private[flashcards] object MnemosyneTranslator extends ProgramTranslator() {
-  override def handleLatex(text: String) = "<$>" + text + "</$>"
+  override def handleLatex(text: String, isBlock: Boolean) = 
+    if (isBlock) "<$>" + text + "</$>"
+    else "<$$>" + text + "</$$>"
 }
