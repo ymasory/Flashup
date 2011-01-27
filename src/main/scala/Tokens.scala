@@ -83,6 +83,7 @@ case class LatexBlock(lines: List[Line]) extends BackElement() {
 }
 case class Line(stretch: Stretch) extends BackElement() {
   override val toString = stretch.toString + LF
+  val extractText: String = stretch.spans.foldLeft("")(_ + _.text)
   def isEmpty: Boolean = stretch.spans.length == 0
 }
 
