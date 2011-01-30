@@ -7,6 +7,7 @@ import StringUtils.LF
 private[flashcards] abstract class ProgramTranslator extends FlashcardTranslator {
 
   val Delimit = "\t"
+  val LatexBR = """\\"""
   val BR = "<br>"
   val PreOpen = "<pre>"
   val PreClose = "</pre>"
@@ -64,7 +65,7 @@ private[flashcards] abstract class ProgramTranslator extends FlashcardTranslator
             val builder = new StringBuilder
             for (i <- 0 until lines.length) {
               builder append lines(i).extractText
-              if (i < lines.length - 1) builder append BR
+              if (i < lines.length - 1) builder append LatexBR
             }
             builder toString
           }
