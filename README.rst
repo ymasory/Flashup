@@ -13,15 +13,14 @@ My flashcards <http://yuvimasory.com/flashcards.html>
 
 Run
 ===
-1. Install sbt 0.7.7 <http://code.google.com/p/simple-build-tool/>
+1. Install sbt 0.10+ <https://github.com/harrah/xsbt/wiki/Setup>
 2. ``cd Flashup``
-3. ``sbt update``
-4. ``echo 'run samples/sample.flashup' | sbt``
-5. ``echo 'run --anki samples/sample.flashup' | sbt``
-6. ``echo 'run --mnemo samples/sample.flashup' | sbt``
-7. open ``sample.pdf`` in your favorite PDF viewer
-8. import ``sample-anki.txt`` in either Anki
-9. import ``sample-mnemosyne.txt`` in either Mnemosyne
+3. ``echo 'run samples/sample.flashup' | sbt``
+4. ``echo 'run --anki samples/sample.flashup' | sbt``
+5. ``echo 'run --mnemo samples/sample.flashup' | sbt``
+6. open ``sample.pdf`` in your favorite PDF viewer
+7. import ``sample-anki.txt`` in either Anki
+8. import ``sample-mnemosyne.txt`` in either Mnemosyne
 
 Standalone
 ==========
