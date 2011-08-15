@@ -159,16 +159,7 @@ object CLI {
             //there has got to be a way to eliminate this tedious duplication
             val sibling = config getBoolean sib
 
-            if (config getBoolean(all)) {
-              List (
-                makeRequest(inFile, naiveOutFile, sibling, Pages.Backs, OutType.Pdf),
-                makeRequest(inFile, naiveOutFile, sibling, Pages.Fronts, OutType.Pdf),
-                makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Pdf),
-                makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Anki),
-                makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Mnemo)
-              )
-            }
-            else if (config getBoolean(pdf)) {
+            if (config getBoolean(pdf)) {
               if (config getBoolean(backs))
                 List(makeRequest(inFile, naiveOutFile, sibling, Pages.Backs, OutType.Pdf))
               else if (config getBoolean(fronts))
@@ -183,8 +174,13 @@ object CLI {
             else if (config getBoolean(mnemo))
               List(makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Mnemo))
             else {
-              Console.err println "unexpected CLI case"
-              Nil
+              List (
+                makeRequest(inFile, naiveOutFile, sibling, Pages.Backs, OutType.Pdf),
+                makeRequest(inFile, naiveOutFile, sibling, Pages.Fronts, OutType.Pdf),
+                makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Pdf),
+                makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Anki),
+                makeRequest(inFile, naiveOutFile, sibling, Pages.All, OutType.Mnemo)
+              )
             }
           }
         }
