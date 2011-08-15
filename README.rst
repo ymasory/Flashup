@@ -27,6 +27,5 @@ Standalone
 You can also make a standalone jar if you wish, but I'm told this doesn't work on Mac. Works fine for me on Linux.
 
 1. ``cd Flashup``
-2. ``sbt update``
-3. ``sbt proguard``
-4. ``java -jar target/scala_*/flashup-*.min.jar [args]``
+2. ``sbt proguard``
+3. ``java -jar target/scala_*/flashup-*.min.jar [args]``
