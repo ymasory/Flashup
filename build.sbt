@@ -4,17 +4,22 @@ organization := "com.yuvimasory"
 
 version := "0.2.0"
 
+/* eliminates vexating non-determinism of tests */
+fork in Test := true
+
+scalaVersion := "2.9.2"
+
 crossScalaVersions := Seq(
   "2.9.1-1", "2.9.1", "2.9.0-1", "2.9.0",
   "2.8.1", "2.8.0"
 )
 
-libraryDependencies <+= (scalaVersion) { v =>
-  val scalaTestVersion = if (v startsWith "2.8") "1.3" else "1.4.RC2"
-  "org.scalatest" % "scalatest" % scalaTestVersion % "test"
-} 
-
 libraryDependencies += "com.martiansoftware" % "jsap" % "2.1"
+
+libraryDependencies <+= (scalaVersion) {
+  case "2.8.0" => "org.scalatest" % "scalatest" % "1.3" % "test"
+  case _       => "org.scalatest" %% "scalatest" % "1.8" % "test"
+}
 
 mainClass in (Compile, packageBin) := Some("com.yuvimasory.flashcards.CLI")
 
@@ -22,7 +27,7 @@ mainClass in (Compile, run) := Some("com.yuvimasory.flashcards.CLI")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked")
 
-logLevel := Level.Warn
+logLevel := Level.Info
 
 traceLevel := 5
 
@@ -62,4 +67,3 @@ pomExtra := (
     </developer>
   </developers>
 )
-
