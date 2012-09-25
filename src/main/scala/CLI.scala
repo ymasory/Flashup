@@ -85,8 +85,8 @@ object CLI {
   def main(args: Array[String]) {
 
     parseArgs(args) match {
-      case Nil => exit(1)
-      case fileReqs if (fileReqs.contains(Nil)) => exit(1)
+      case Nil => System exit 1
+      case fileReqs if (fileReqs.contains(Nil)) => System exit 1
       case fileReqs => {
         fileReqs.map {
           case reqs => {
@@ -108,7 +108,7 @@ object CLI {
               }
               case None => {
                 Console.err println ("Could not parse: " + inFile.getAbsolutePath)
-                exit(1)
+                System exit 1
               }
             }
           }
