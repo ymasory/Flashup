@@ -39,5 +39,7 @@ It is built for Scala 2.8.0 through 2.9.2.
 You can add it as a dependency in your `build.sbt` file.
 
 ```scala
-libraryDependencies += "com.yuvimasory" %% "orange-extensions" % "1.0.0"
+libraryDependencies += "com.yuvimasory" %% "flashup" % "1.0.0"
 ```
+
+Because my repository uses a patched version of iText, you will have to add iText as a dependency to your project as well. Flashup is compatible with unpatched iText as well.
