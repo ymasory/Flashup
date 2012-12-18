@@ -1,5 +1,7 @@
 # Flashup - Studying. In plain text. #
 
+[![Build Status](http://ci.yuvimasory.com/job/Flashup/badge/icon)](http://ci.yuvimasory.com/job/Flashup/)
+
 *A simple markup language for creating flashcards*
 
 Project homepage <http://ymasory.github.com/Flashup/>
