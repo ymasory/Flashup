@@ -10,7 +10,6 @@ GitHub repository <http://github.com/ymasory/Flashup>
 
 My flashcards <http://yuvimasory.com/flashcards.html>
 
-
 ## Run ##
 
 - Install sbt 0.12.0 <https://github.com/harrah/xsbt/wiki/Setup>.
@@ -45,3 +44,5 @@ libraryDependencies += "com.yuvimasory" %% "flashup" % "1.0.0"
 ```
 
 Because my repository uses a patched version of iText, you will have to add iText as a dependency to your project as well. Flashup is compatible with unpatched iText as well.
+
+[API Docs (ScalaDocs)](http://ci.yuvimasory.com/job/Flashup/javadoc/?#package)
