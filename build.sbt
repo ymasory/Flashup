@@ -7,9 +7,10 @@ version := "0.2.0"
 /* eliminates vexating non-determinism of tests */
 fork in Test := true
 
-scalaVersion := "2.9.2"
+scalaVersion := "2.10.0"
 
 crossScalaVersions := Seq(
+  "2.9.2",
   "2.9.1-1", "2.9.1", "2.9.0-1", "2.9.0",
   "2.8.1", "2.8.0"
 )
